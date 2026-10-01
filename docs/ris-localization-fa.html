@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>شرح مقاله مکان‌یابی با RIS</title>
+<style>
+/* Layout: A4 print document, single reading column, RTL prose with LTR math islands */
+@font-face { font-family: "Vazirmatn"; font-weight: 400; src: url("{{FONTDIR}}/Vazirmatn-Regular.ttf"); }
+@font-face { font-family: "Vazirmatn"; font-weight: 500; src: url("{{FONTDIR}}/Vazirmatn-Medium.ttf"); }
+@font-face { font-family: "Vazirmatn"; font-weight: 700; src: url("{{FONTDIR}}/Vazirmatn-Bold.ttf"); }
+@font-face { font-family: "Vazirmatn"; font-weight: 800; src: url("{{FONTDIR}}/Vazirmatn-ExtraBold.ttf"); }
+
+:root {
+  --paper: #ffffff;
+  --ink: #1c2330;
+  --muted: #5a6476;
+  --rule: #d9dee7;
+  --accent: #23479c;      /* cobalt: headings, key boxes */
+  --accent-soft: #eef2fb;
+  --amber: #8a5a10;       /* intuition boxes */
+  --amber-soft: #fbf5ea;
+  --green: #1f6b4f;       /* worked examples */
+  --green-soft: #edf6f1;
+  --proof-soft: #f5f6f8;
+  --font-body: "Vazirmatn", "DejaVu Sans", sans-serif;
+}
+@page { size: A4; margin: 18mm 17mm; }
+html { background: var(--paper); }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: 10.6pt; line-height: 1.95;
+  text-align: justify;
+}
+h1, h2, h3, h4 { text-wrap: balance; text-align: right; line-height: 1.5; }
+h1 { font-size: 19pt; font-weight: 800; margin: 0 0 4mm; color: var(--ink); }
+h2 {
+  font-size: 15pt; font-weight: 800; color: var(--accent);
+  margin: 9mm 0 3mm; padding-bottom: 1.5mm; border-bottom: 1.2pt solid var(--accent);
+  break-after: avoid;
+}
+h2 .num { display: inline-block; min-width: 9mm; color: var(--muted); font-weight: 700; }
+h3 { font-size: 12pt; font-weight: 700; margin: 6mm 0 2mm; color: var(--ink); break-after: avoid; }
+h4 { font-size: 10.8pt; font-weight: 700; margin: 4mm 0 1mm; color: var(--accent); break-after: avoid; }
+p { margin: 0 0 2.6mm; }
+ol { list-style-type: persian; }
+ul, ol { margin: 0 0 3mm; padding-right: 6mm; padding-left: 0; }
+li { margin-bottom: 1.4mm; }
+strong { font-weight: 700; }
+.lat { direction: ltr; unicode-bidi: isolate; font-family: var(--font-body); }
+.muted { color: var(--muted); }
+.page-break { break-before: page; }
+
+/* Cover */
+.cover { padding-top: 0; }
+.cover h3 { margin-top: 4mm; }
+.eyebrow { font-size: 9.5pt; letter-spacing: .04em; color: var(--accent); font-weight: 700; margin-bottom: 4mm; }
+.orig { direction: ltr; text-align: left; font-size: 10.5pt; color: var(--muted); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 3mm 0; margin: 6mm 0; line-height: 1.6; }
+.orig b { color: var(--ink); font-weight: 700; }
+.roadmap { display: flex; flex-wrap: wrap; gap: 2mm; margin: 5mm 0 2mm; align-items: center; }
+.roadmap span.step { border: 1px solid var(--accent); color: var(--accent); background: var(--accent-soft); border-radius: 3px; padding: .6mm 2.6mm; font-size: 9.2pt; font-weight: 500; }
+.roadmap span.arrow { color: var(--muted); font-size: 9pt; }
+
+/* TOC */
+.toc { columns: 2; column-gap: 10mm; font-size: 10pt; margin-top: 4mm; }
+.toc div { break-inside: avoid; display: flex; gap: 2mm; padding: .6mm 0; border-bottom: 1px dotted var(--rule); }
+.toc .n { color: var(--accent); font-weight: 700; min-width: 7mm; }
+
+/* Boxes */
+.box { border-radius: 3px; padding: 3mm 4mm 2mm; margin: 3.5mm 0 4mm; break-inside: avoid; }
+.box.long { break-inside: auto; }
+.box .label { display: inline-block; font-size: 8.8pt; font-weight: 800; letter-spacing: .03em; padding: .2mm 2.4mm; border-radius: 2px; margin-bottom: 1.5mm; color: #fff; }
+.box.intuition { background: var(--amber-soft); border: 1px solid #ecd9b4; }
+.box.intuition .label { background: var(--amber); }
+.box.example { background: var(--green-soft); border: 1px solid #c7e1d4; }
+.box.example .label { background: var(--green); }
+.box.proof { background: var(--proof-soft); border: 1px solid var(--rule); }
+.box.proof .label { background: var(--muted); }
+.box.key { background: var(--accent-soft); border: 1px solid #c8d4f0; }
+.box.key .label { background: var(--accent); }
+
+/* Paper statement quotes (lemma/theorem) */
+.stmt { border: 1.2pt solid var(--ink); border-radius: 3px; padding: 3mm 4mm 2mm; margin: 3.5mm 0; break-inside: avoid; }
+.stmt .head { font-weight: 800; color: var(--ink); margin-bottom: 1mm; }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 3mm 0 4mm; font-size: 9.6pt; break-inside: avoid; }
+th, td { border-bottom: 1px solid var(--rule); padding: 1.6mm 2mm; text-align: right; vertical-align: top; line-height: 1.7; }
+th { background: var(--accent-soft); color: var(--accent); font-weight: 700; border-bottom: 1.2pt solid var(--accent); }
+td.sym { direction: ltr; text-align: left; white-space: nowrap; width: 30%; }
+td.c { text-align: center; }
+table.long { break-inside: auto; }
+table.long tr { break-inside: avoid; }
+
+/* Math */
+mjx-container { direction: ltr; unicode-bidi: isolate; }
+mjx-container[display="true"] { margin: 2.6mm 0 !important; text-align: center; overflow: visible; }
+.eqgroup { break-inside: avoid; }
+
+/* Figures */
+figure { margin: 4mm 0; break-inside: avoid; text-align: center; }
+figure svg { max-width: 100%; height: auto; }
+figcaption { font-size: 9.2pt; color: var(--muted); margin-top: 1.5mm; text-align: center; }
+.two-fig { display: flex; gap: 6mm; justify-content: center; }
+.two-fig > div { flex: 1; min-width: 0; }
+
+.findings { counter-reset: f; list-style: none; padding: 0; }
+.findings li { counter-increment: f; position: relative; padding-right: 9mm; margin-bottom: 2.4mm; }
+.findings li::before { content: counter(f, persian); position: absolute; right: 0; top: .3mm; width: 6mm; height: 6mm; line-height: 6mm; text-align: center; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 9pt; }
+
+.glossary { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4mm 7mm; }
+.glossary > div { break-inside: avoid; border-top: 1px solid var(--rule); padding-top: 1.6mm; }
+.glossary .t { font-weight: 700; color: var(--accent); }
+.glossary .t .lat { color: var(--muted); font-weight: 500; font-size: 9pt; }
+</style>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(', '\\)']],
+    displayMath: [['\\[', '\\]']],
+    tags: 'none',
+    macros: {
+      bm: ['\\boldsymbol{#1}', 1],
+      tp: '{\\mathsf T}',
+      hr: '{\\mathsf H}',
+      Ex: '\\mathbb{E}',
+      Rl: '\\operatorname{Re}',
+      Im: '\\operatorname{Im}',
+      diag: '\\operatorname{diag}',
+      tr: '\\operatorname{Tr}'
+    }
+  },
+  svg: { fontCache: 'global' },
+  startup: { typeset: true }
+};
+</script>
+<script src="{{MATHJAX}}"></script>
+</head>
+<body>
+
+<!-- ============================ COVER ============================ -->
+<section class="cover">
+  <div class="eyebrow">شرح کامل و فارسی یک مقاله · arXiv:2210.03599v2</div>
+  <h1>مکان‌یابی به کمک سطوح هوشمند بازتابنده (RIS) وقتی مکان و جهت RIS دقیق معلوم نیست؛ در میدان نزدیک و میدان دور</h1>
+  <div class="orig">
+    <b>RIS-Aided Localization under Position and Orientation Offsets in the Near and Far Field</b><br>
+    Don-Roberts Emenonye, Harpreet S. Dhillon, R. Michael Buehrer — Wireless@VT, Virginia Tech
+  </div>
+  <p>این سند تلاش می‌کند مقاله را طوری توضیح دهد که بدون مراجعه به متن اصلی بتوانید منطق آن را از ابتدا تا انتها دنبال کنید. هر جا ریاضیات مقاله فشرده یا بدون اثبات آمده، گام‌های میانی را نوشته‌ام، مثال عددی ساده آورده‌ام و معنای فیزیکی هر رابطه را جدا گفته‌ام. شماره‌ی معادله‌هایی که با <span class="lat">(n)</span> مشخص شده‌اند همان شماره‌ی معادله در مقاله‌ی اصلی است تا بتوانید تطبیق دهید.</p>
+
+  <p>چهار نوع کادر در متن می‌بینید:</p>
+  <div class="roadmap">
+    <span class="step" style="background:var(--amber-soft);border-color:var(--amber);color:var(--amber)">شهود: معنای فیزیکی</span>
+    <span class="step" style="background:var(--green-soft);border-color:var(--green);color:var(--green)">مثال: عدد یا حالت ساده</span>
+    <span class="step" style="background:var(--proof-soft);border-color:var(--muted);color:var(--muted)">اثبات: گام‌های ریاضی</span>
+    <span class="step">نکته کلیدی</span>
+  </div>
+
+  <h3>مسیر منطقی مقاله</h3>
+  <div class="roadmap">
+    <span class="step">هندسه و چرخش</span><span class="arrow">←</span>
+    <span class="step">مدل سیگنال OFDM</span><span class="arrow">←</span>
+    <span class="step">میدان نزدیک و دور</span><span class="arrow">←</span>
+    <span class="step">افت مسیر وابسته به جهت</span><span class="arrow">←</span>
+    <span class="step">اطلاعات فیشر کانال</span><span class="arrow">←</span>
+    <span class="step">EFIM و تخمین‌پذیری</span><span class="arrow">←</span>
+    <span class="step">اطلاعات فیشر مکان</span><span class="arrow">←</span>
+    <span class="step">شبیه‌سازی</span>
+  </div>
+
+  <h3>فهرست</h3>
+  <div class="toc">
+    <div><span class="n">۱</span><span>خلاصه در یک نگاه</span></div>
+    <div><span class="n">۲</span><span>واژه‌نامه و پیش‌زمینه</span></div>
+    <div><span class="n">۳</span><span>صورت مسئله و انگیزه</span></div>
+    <div><span class="n">۴</span><span>هندسه: مکان، چرخش و فاصله</span></div>
+    <div><span class="n">۵</span><span>مدل سیگنال ارسالی و دریافتی</span></div>
+    <div><span class="n">۶</span><span>میدان نزدیک و میدان دور</span></div>
+    <div><span class="n">۷</span><span>افت مسیر وابسته به جهت‌گیری RIS</span></div>
+    <div><span class="n">۸</span><span>بردار پارامترهای مجهول</span></div>
+    <div><span class="n">۹</span><span>اطلاعات فیشر از صفر</span></div>
+    <div><span class="n">۱۰</span><span>EFIM، مکمل شور و تخمین‌پذیری</span></div>
+    <div><span class="n">۱۱</span><span>جداسازی مسیرها با فرض‌های ۳ و ۴</span></div>
+    <div><span class="n">۱۲</span><span>قلب مقاله: آیا خطای جهت RIS قابل تخمین است؟</span></div>
+    <div><span class="n">۱۳</span><span>از پارامترهای کانال تا مکان کاربر</span></div>
+    <div><span class="n">۱۴</span><span>نتایج عددی</span></div>
+    <div><span class="n">۱۵</span><span>جمع‌بندی، فرض‌ها و محدودیت‌ها</span></div>
+    <div><span class="n">۱۶</span><span>جدول نمادها</span></div>
+  </div>
+</section>
+
+<!-- ============================ 1 ============================ -->
+<h2 class="page-break"><span class="num">۱</span>خلاصه در یک نگاه</h2>
+
+<p>یک ایستگاه پایه (BS) سیگنال می‌فرستد. این سیگنال از دو راه به کاربر (UE) می‌رسد: مستقیم (مسیر دید مستقیم یا LOS) و از طریق بازتاب روی چند سطح هوشمند بازتابنده (RIS). کاربر می‌خواهد از روی سیگنال دریافتی، مکان و جهت خودش را حساب کند. برای این کار باید مکان و جهت RISها را بداند، چون RIS مثل یک «فرستنده‌ی مجازی» با مکان معلوم عمل می‌کند. مشکل این است که RIS ممکن است بعد از نصب کمی بچرخد (<strong>خطای جهت‌گیری</strong> یا misorientation) یا جابه‌جا شود (<strong>خطای مکان</strong> یا misalignment)، و اطلاعات ثبت‌شده در سرور قدیمی شود.</p>
+
+<p>مقاله با ابزار <strong>اطلاعات فیشر بیزی</strong> بررسی می‌کند که در این وضعیت چه مقدار اطلاعات در سیگنال باقی می‌ماند. یافته‌های اصلی:</p>
+
+<ol class="findings">
+  <li><strong>جهت‌گیری RIS در افت مسیر حضور دارد.</strong> بهره‌ی هر المان RIS به زاویه‌ی بین بردار عمود بر RIS و جهت فرستنده یا گیرنده بستگی دارد. پس اگر RIS بچرخد، هم دامنه‌ی سیگنال بازتابی عوض می‌شود و هم فاز آن. به همین دلیل در مشتق‌گیری برای ماتریس فیشر به قاعده‌ی ضرب نیاز داریم.</li>
+  <li><strong>در میدان دور، خطای جهت‌گیری RIS قابل تخمین نیست</strong> اگر فاز مسیر (بهره‌ی مختلط کانال) مجهول باشد و اطلاعات پیشین درباره‌اش نداشته باشیم. تعداد آنتن‌های گیرنده هم این را عوض نمی‌کند. دلیل: در میدان دور چرخش RIS فقط یک ضریب مختلط مشترک روی کل سیگنال آن مسیر می‌گذارد، و این ضریب با ضریب مختلط مجهول کانال قاطی می‌شود.</li>
+  <li><strong>در میدان نزدیک، اگر کاربر بیش از یک آنتن داشته باشد، خطای جهت‌گیری قابل تخمین است</strong>، حتی با فاز مجهول. دلیل: انحنای جبهه‌ی موج باعث می‌شود هر آنتن گیرنده الگوی متفاوتی از اثر چرخش را ببیند.</li>
+  <li><strong>RIS فقط وقتی به مکان‌یابی کمک می‌کند که درباره‌ی مکانش اطلاعات پیشین داشته باشیم</strong>، فارغ از اندازه‌ی RIS و رژیم انتشار. اگر مکان RIS کاملاً مجهول باشد، تمام اطلاعات آن مسیر صرف تخمین مکان خود RIS می‌شود.</li>
+  <li><strong>به‌کاربردن مدل میدان دور برای سیگنالی که در واقع در میدان نزدیک است، اطلاعات را از بین می‌برد.</strong> شبیه‌سازی‌ها نشان می‌دهند در این حالت خطای تخمین جهت‌گیری با افزایش آنتن‌ها کم نمی‌شود.</li>
+</ol>
+
+<div class="box key"><span class="label">نکته کلیدی</span>
+<p>پیام عملی مقاله: اگر می‌خواهید چرخش یک RIS را از روی سیگنال دریافتی کاربر تشخیص دهید و به BS گزارش کنید، کاربر باید در میدان نزدیک RIS باشد و بیش از یک آنتن داشته باشد. در میدان دور این کار فقط با داشتن اطلاعات پیشین درباره‌ی فاز کانال ممکن است که در عمل تقریباً هیچ‌وقت در دسترس نیست.</p>
+</div>
+
+<!-- ============================ 2 ============================ -->
+<h2><span class="num">۲</span>واژه‌نامه و پیش‌زمینه</h2>
+
+<div class="glossary">
+  <div><div class="t">RIS <span class="lat">Reconfigurable Intelligent Surface</span></div>صفحه‌ای تخت با تعداد زیادی المان کوچک (معمولاً به فاصله‌ی نصف طول موج). هر المان می‌تواند فاز موج بازتابی را با کنترل نرم‌افزاری تغییر دهد. مثل آینه‌ای که جهت بازتابش قابل برنامه‌ریزی است.</div>
+  <div><div class="t">BS و UE</div>ایستگاه پایه (فرستنده با مکان دقیقاً معلوم) و کاربر یا تجهیز کاربر (گیرنده‌ای که مکان و جهتش مجهول است).</div>
+  <div><div class="t">مسیر LOS <span class="lat">Line of Sight</span></div>مسیر مستقیم از BS به UE. در فرکانس‌های بالا (موج میلی‌متری، تراهرتز) به‌راحتی مسدود می‌شود؛ RIS یک «LOS مجازی» می‌سازد.</div>
+  <div><div class="t">OFDM</div>روش ارسال که پهنای باند را به \(N\) زیرحامل باریک تقسیم می‌کند. تأخیر \(\tau\) در هر زیرحامل \(f_n\) به صورت چرخش فاز \(e^{-j2\pi f_n\tau}\) ظاهر می‌شود.</div>
+  <div><div class="t">میدان نزدیک و دور</div>اگر گیرنده نزدیک آرایه باشد جبهه‌ی موج کروی (منحنی) است: میدان نزدیک. اگر دور باشد جبهه تقریباً تخت است: میدان دور. مرز تقریبی: فاصله‌ی فراونهوفر \(2D^2/\lambda\).</div>
+  <div><div class="t">خطای جهت‌گیری و خطای مکان</div>misorientation: چرخیدن موجودیت بعد از نصب، یعنی تغییر زوایای \(\bm\Phi\). misalignment: جابه‌جا شدن مرکز آن، با بردار \(\bm\xi\).</div>
+  <div><div class="t">پارامتر مزاحم <span class="lat">nuisance</span></div>مجهولی که خودش برای ما مهم نیست ولی چون مجهول است باید همراه بقیه تخمین زده شود و اطلاعات را «می‌خورد». مثل فاز کانال یا خطای همزمانی.</div>
+  <div><div class="t">اطلاعات پیشین <span class="lat">a priori</span></div>دانسته‌ی قبلی درباره‌ی یک پارامتر به شکل توزیع احتمال. هرچه این توزیع باریک‌تر باشد، اطلاعات پیشین بیشتر است.</div>
+  <div><div class="t">FIM و CRB</div>ماتریس اطلاعات فیشر میزان حساسیت سیگنال به پارامترها را می‌سنجد. وارون آن (کران کرامر-رائو) کمترین واریانس ممکن برای هر تخمین‌گر نااریب است.</div>
+  <div><div class="t">FIM بیزی (عمومی)</div>وقتی پارامترها تصادفی‌اند و توزیع پیشین دارند: مجموع اطلاعات حاصل از مشاهده و اطلاعات پیشین.</div>
+  <div><div class="t">EFIM <span class="lat">Equivalent FIM</span></div>ماتریس فیشر معادل فقط برای پارامترهای مورد علاقه، بعد از کسر اطلاعاتی که صرف پارامترهای مزاحم می‌شود. با مکمل شور ساخته می‌شود.</div>
+  <div><div class="t">PEB و OEB</div>کران خطای مکان (متر) و کران خطای جهت‌گیری (رادیان): جذر مجموع عناصر قطری مربوط در وارون EFIM.</div>
+</div>
+
+<!-- ============================ 3 ============================ -->
+<h2><span class="num">۳</span>صورت مسئله و انگیزه</h2>
+
+<p>GPS در فضای باز دقت زیرمتری دارد، ولی در کوچه‌های باریک شهری، تونل‌ها و داخل ساختمان‌ها ممکن است کار نکند. جایگزین طبیعی، استفاده از شبکه‌ی سلولی است: با اندازه‌گیری زمان رسیدن (TOA)، اختلاف زمان رسیدن (TDOA) و زاویه‌ی رسیدن (AOA) می‌شود مکان را حساب کرد. در فرکانس‌های بالا (که نسل ششم به آن‌ها می‌رود) آرایه‌های بزرگ آنتن ممکن است و حتی با یک ایستگاه (single anchor) هم می‌شود مکان‌یابی کرد. ولی کار به وجود مسیر LOS وابسته است و این مسیر در فرکانس بالا به‌راحتی مسدود می‌شود.</p>
+
+<p>RIS این مشکل را حل می‌کند: یک مسیر بازتابی کنترل‌شده می‌سازد که مثل LOS دوم عمل می‌کند. ولی شرط استفاده از این مسیر برای مکان‌یابی این است که مکان و جهت RIS را بدانیم. حالا اگر RIS روی جسم متحرک نصب شده باشد، یا در فضای داخلی که ممکن است تکان بخورد، یا اگر از ابتدا مکانش دقیق ثبت نشده باشد چه؟ مقاله دو سؤال می‌پرسد:</p>
+<ol>
+  <li>آیا کاربر می‌تواند از روی سیگنال دریافتی، خطای جهت‌گیری RIS را تخمین بزند (تا مثلاً به BS گزارش کند و اصلاح شود)؟ در کدام رژیم انتشار و با چند آنتن؟</li>
+  <li>عدم قطعیت در مکان و جهت RIS چقدر به دقت مکان‌یابی کاربر آسیب می‌زند؟</li>
+</ol>
+
+<figure>
+<svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" font-family="Vazirmatn, sans-serif" font-size="13">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#23479c"/></marker>
+    <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5a6476"/></marker>
+  </defs>
+  <!-- BS -->
+  <rect x="40" y="130" width="34" height="50" rx="3" fill="#eef2fb" stroke="#23479c" stroke-width="1.5"/>
+  <line x1="57" y1="130" x2="57" y2="105" stroke="#23479c" stroke-width="2"/>
+  <circle cx="57" cy="102" r="4" fill="#23479c"/>
+  <text x="57" y="200" text-anchor="middle" fill="#1c2330" font-weight="700">BS</text>
+  <text x="57" y="216" text-anchor="middle" fill="#5a6476" font-size="11">مبدأ مختصات</text>
+  <!-- RIS1 rotated -->
+  <g transform="translate(300,48) rotate(-14)">
+    <rect x="-60" y="-14" width="120" height="28" fill="#fbf5ea" stroke="#8a5a10" stroke-width="1.5"/>
+    <g stroke="#8a5a10" stroke-width=".6" opacity=".7">
+      <line x1="-40" y1="-14" x2="-40" y2="14"/><line x1="-20" y1="-14" x2="-20" y2="14"/><line x1="0" y1="-14" x2="0" y2="14"/><line x1="20" y1="-14" x2="20" y2="14"/><line x1="40" y1="-14" x2="40" y2="14"/><line x1="-60" y1="0" x2="60" y2="0"/>
+    </g>
+  </g>
+  <g transform="translate(300,48)"><rect x="-60" y="-14" width="120" height="28" fill="none" stroke="#8a5a10" stroke-dasharray="3 3" stroke-width="1"/></g>
+  <text x="300" y="18" text-anchor="middle" fill="#8a5a10" font-weight="700">RIS ۱ (چرخیده)</text>
+  <!-- RIS2 -->
+  <rect x="240" y="238" width="120" height="28" fill="#eef2fb" stroke="#23479c" stroke-width="1.5"/>
+  <g stroke="#23479c" stroke-width=".6" opacity=".6">
+    <line x1="260" y1="238" x2="260" y2="266"/><line x1="280" y1="238" x2="280" y2="266"/><line x1="300" y1="238" x2="300" y2="266"/><line x1="320" y1="238" x2="320" y2="266"/><line x1="340" y1="238" x2="340" y2="266"/><line x1="240" y1="252" x2="360" y2="252"/>
+  </g>
+  <text x="300" y="290" text-anchor="middle" fill="#23479c" font-weight="700">RIS ۲ (مکان دقیق)</text>
+  <!-- UE -->
+  <rect x="560" y="132" width="26" height="46" rx="5" fill="#edf6f1" stroke="#1f6b4f" stroke-width="1.5"/>
+  <text x="573" y="200" text-anchor="middle" fill="#1c2330" font-weight="700">UE</text>
+  <text x="573" y="216" text-anchor="middle" fill="#5a6476" font-size="11">مکان و جهت مجهول</text>
+  <!-- paths -->
+  <line x1="80" y1="155" x2="552" y2="155" stroke="#5a6476" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ar2)"/>
+  <text x="320" y="148" text-anchor="middle" fill="#5a6476" font-size="12">مسیر LOS</text>
+  <line x1="78" y1="140" x2="250" y2="66" stroke="#23479c" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="350" y1="66" x2="555" y2="140" stroke="#23479c" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="78" y1="170" x2="262" y2="236" stroke="#23479c" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="338" y1="236" x2="555" y2="172" stroke="#23479c" stroke-width="1.5" marker-end="url(#ar)"/>
+  <text x="150" y="88" fill="#23479c" font-size="12">BS→RIS</text>
+  <text x="455" y="88" fill="#23479c" font-size="12">RIS→UE</text>
+</svg>
+<figcaption>شکل ۱ (بازسازی شکل ۱ مقاله): یک BS، یک RIS چرخیده (کادر خط‌چین مکان اولیه‌ی آن است)، یک RIS سالم و یک کاربر. کاربر هم سیگنال مستقیم و هم سیگنال‌های بازتابی را می‌گیرد.</figcaption>
+</figure>
+
+<p>ابزار مقاله <strong>کران‌های بنیادی</strong> است، نه یک الگوریتم خاص. یعنی مقاله نمی‌گوید «این روش این‌قدر خطا دارد»، می‌گوید «هیچ روش نااریبی نمی‌تواند بهتر از این باشد». اگر این کران بی‌نهایت شود (ماتریس فیشر وارون‌پذیر نباشد)، یعنی پارامتر اصلاً از روی داده قابل تخمین نیست.</p>
+
+<!-- ============================ 4 ============================ -->
+<h2><span class="num">۴</span>هندسه: مکان، چرخش و فاصله</h2>
+
+<h3>۴-۱ موجودیت‌ها و المان‌ها</h3>
+<p>مقاله BS، هر RIS و UE را «موجودیت» (entity) می‌نامد. هر موجودیت \(V\) چند المان دارد (آنتن‌های BS یا UE، یا المان‌های بازتابنده‌ی RIS). تعداد آنتن‌های BS برابر \(N_B\)، تعداد المان‌های RIS شماره‌ی \(m\) برابر \(N_R^{[m]}\) و تعداد آنتن‌های UE برابر \(N_U\) است. تعداد RISها \(M_1\) است.</p>
+
+<p>مرکز موجودیت \(V\) در لحظه‌ی نصب در نقطه‌ی \(\tilde{\mathbf p}_V=[\tilde x_V,\tilde y_V,\tilde z_V]^{\tp}\in\mathbb R^3\) است. المان \(v\)ام آن در مختصات محلی (نسبت به مرکز) در \(\tilde{\mathbf s}_v\) قرار دارد، پس مکان مطلقش \(\tilde{\mathbf p}_v=\tilde{\mathbf p}_V+\tilde{\mathbf s}_v\) است. علامت «~» یعنی «مقدار اولیه، قبل از هر جابه‌جایی».</p>
+
+<h3>۴-۲ مدل جابه‌جایی و چرخش: معادله‌ی (1)</h3>
+<p>بعد از نصب، موجودیت ممکن است به اندازه‌ی بردار \(\bm\xi_V\in\mathbb R^3\) جابه‌جا شود و با ماتریس دوران \(\mathbf Q_V\) بچرخد. مکان جدید المان \(v\)ام:</p>
+\[
+\mathbf p_v=\tilde{\mathbf p}_V+\bm\xi_V+\mathbf Q_V\tilde{\mathbf s}_v ,\qquad \mathbf p_v=\mathbf p_V+\mathbf s_v \tag{1}
+\]
+<p>که در آن \(\mathbf p_V=\tilde{\mathbf p}_V+\bm\xi_V\) مرکز جدید و \(\mathbf s_v=\mathbf Q_V\tilde{\mathbf s}_v\) مکان المان نسبت به مرکز جدید است. معنای هر جمله:</p>
+<ul>
+  <li>\(\tilde{\mathbf p}_V\): جایی که موجودیت نصب شد (برای BS و RIS معلوم فرض می‌شود).</li>
+  <li>\(\bm\xi_V\): خطای مکان (misalignment). کل صفحه بدون چرخش منتقل می‌شود.</li>
+  <li>\(\mathbf Q_V\tilde{\mathbf s}_v\): خطای جهت‌گیری (misorientation). هر المان حول مرکز می‌چرخد.</li>
+</ul>
+
+<p>ماتریس دوران با سه زاویه‌ی \(\bm\Phi_V=[\alpha_V,\psi_V,\varphi_V]^{\tp}\) ساخته می‌شود: \(\mathbf Q_V=\mathbf Q(\alpha_V,\psi_V,\varphi_V)\). مقاله به کتاب LaValle ارجاع می‌دهد که در آن دوران سه‌بعدی به صورت ضرب سه دوران پایه (yaw، pitch، roll) نوشته می‌شود:</p>
+\[
+\mathbf Q(\alpha,\psi,\varphi)=\mathbf R_z(\alpha)\,\mathbf R_y(\psi)\,\mathbf R_x(\varphi),
+\]
+\[
+\mathbf R_z(\alpha)=\begin{bmatrix}\cos\alpha & -\sin\alpha & 0\\ \sin\alpha & \cos\alpha & 0\\ 0 & 0 & 1\end{bmatrix},\;
+\mathbf R_y(\psi)=\begin{bmatrix}\cos\psi & 0 & \sin\psi\\ 0 & 1 & 0\\ -\sin\psi & 0 & \cos\psi\end{bmatrix},\;
+\mathbf R_x(\varphi)=\begin{bmatrix}1 & 0 & 0\\ 0 & \cos\varphi & -\sin\varphi\\ 0 & \sin\varphi & \cos\varphi\end{bmatrix}.
+\]
+<p>ویژگی‌های مهم: \(\mathbf Q^{\tp}\mathbf Q=\mathbf I\) و \(\det\mathbf Q=1\). پس طول‌ها حفظ می‌شوند: \(\|\mathbf Q\tilde{\mathbf s}\|=\|\tilde{\mathbf s}\|\). چرخش شکل RIS را عوض نمی‌کند، فقط آن را در فضا می‌چرخاند.</p>
+
+<p>همین مدل برای RIS شماره‌ی \(m\) با نمادهای مقاله:</p>
+\[
+\mathbf s_r^{[m]}=\mathbf Q_R^{[m]}\tilde{\mathbf s}_r^{[m]},\qquad
+\mathbf p_R^{[m]}=\tilde{\mathbf p}_R^{[m]}+\bm\xi_R^{[m]},\qquad
+\mathbf p_r^{[m]}=\tilde{\mathbf p}_R^{[m]}+\bm\xi_R^{[m]}+\mathbf Q_R^{[m]}\tilde{\mathbf s}_r^{[m]}.
+\]
+
+<div class="box example"><span class="label">مثال عددی: چرخش کوچک، اثر بزرگ</span>
+<p>در شبیه‌سازی مقاله طول موج \(\lambda=3\) سانتی‌متر و فاصله‌ی المان‌ها \(1.5\) سانتی‌متر است. یک RIS با \(11\times 11=121\) المان ضلعی حدود \(15\) سانتی‌متر دارد؛ گوشه‌ی آن تا مرکز حدود \(\sqrt2\times 7.5\approx 10.6\) سانتی‌متر فاصله دارد. اگر RIS فقط \(0.1\) رادیان (حدود \(5.7\) درجه) بچرخد، این گوشه حدود \(10.6\times0.1\approx1.06\) سانتی‌متر جابه‌جا می‌شود. این یعنی حدود یک‌سوم طول موج، که می‌تواند فاز موج بازتابی از آن المان را تا حدود \(2\pi/3\) رادیان (۱۲۰ درجه) تغییر دهد. پس چرخش‌های به ظاهر کوچک، روی فاز اثر بزرگی دارند.</p>
+</div>
+
+<h3>۴-۳ نمایش جهت با زوایای کروی</h3>
+<p>مکان مرکز موجودیت \(V\) را نسبت به مرکز موجودیت \(G\) می‌توان با فاصله و یک بردار جهت یکه نوشت:</p>
+\[
+\mathbf w_V=\mathbf w_G+d_{\mathbf w_G\mathbf w_V}\,\bm\Delta_{\mathbf w_G\mathbf w_V},\qquad
+\bm\Delta_{\mathbf w_G\mathbf w_V}=\begin{bmatrix}\cos\phi\,\sin\theta\\ \sin\phi\,\sin\theta\\ \cos\theta\end{bmatrix},
+\]
+<p>که \(\phi\) زاویه‌ی سمت (آزیموت، در صفحه‌ی افقی) و \(\theta\) زاویه‌ی ارتفاع (از محور \(z\)) است، و \(\mathbf w\in\{\mathbf p,\tilde{\mathbf p}\}\) یعنی این نمایش هم برای مکان جدید و هم مکان اولیه به کار می‌رود. همین کار برای المان‌ها نسبت به مرکز خودشان: \(\mathbf w_v=d_{\mathbf w_v}\bm\Delta_{\mathbf w_v}\). این زوایا و فاصله‌ها همان «پارامترهای هندسی کانال» هستند که بعداً تخمین زده می‌شوند (زاویه‌ی رسیدن، زاویه‌ی خروج، تأخیر).</p>
+
+<h3>۴-۴ لم ۱: فاصله‌ی دو المان</h3>
+<div class="stmt"><div class="head">لم ۱ (معادله‌ی 2)</div>
+فاصله‌ی المان \(g\) روی موجودیت \(G\) تا المان \(v\) روی موجودیت \(V\):
+\[
+\begin{aligned}
+d^2_{\mathbf p_g\mathbf p_v}= & \;\|\tilde{\mathbf p}_V-\tilde{\mathbf p}_G\|^2+\|\mathbf Q_V\tilde{\mathbf s}_v-\mathbf Q_G\tilde{\mathbf s}_g\|^2+\|\bm\xi_V-\bm\xi_G\|^2\\
+& +2(\tilde{\mathbf p}_V-\tilde{\mathbf p}_G)^{\tp}(\bm\xi_V-\bm\xi_G)
++2(\tilde{\mathbf p}_V-\tilde{\mathbf p}_G)^{\tp}(\mathbf Q_V\tilde{\mathbf s}_v-\mathbf Q_G\tilde{\mathbf s}_g)\\
+& +2(\mathbf Q_V\tilde{\mathbf s}_v-\mathbf Q_G\tilde{\mathbf s}_g)^{\tp}(\bm\xi_V-\bm\xi_G).
+\end{aligned}\tag{2}
+\]
+</div>
+<div class="box proof"><span class="label">اثبات گام‌به‌گام</span>
+<p>از معادله‌ی (1) تفاضل دو مکان را می‌نویسیم و آن را سه تکه می‌کنیم:</p>
+\[
+\mathbf p_v-\mathbf p_g=\underbrace{(\tilde{\mathbf p}_V-\tilde{\mathbf p}_G)}_{\mathbf a}+\underbrace{(\mathbf Q_V\tilde{\mathbf s}_v-\mathbf Q_G\tilde{\mathbf s}_g)}_{\mathbf b}+\underbrace{(\bm\xi_V-\bm\xi_G)}_{\mathbf c}.
+\]
+<p>مربع نُرم اقلیدسی مجموع سه بردار از بسط \(\|\mathbf a+\mathbf b+\mathbf c\|^2=(\mathbf a+\mathbf b+\mathbf c)^{\tp}(\mathbf a+\mathbf b+\mathbf c)\) به دست می‌آید:</p>
+\[
+\|\mathbf a+\mathbf b+\mathbf c\|^2=\|\mathbf a\|^2+\|\mathbf b\|^2+\|\mathbf c\|^2+2\mathbf a^{\tp}\mathbf c+2\mathbf a^{\tp}\mathbf b+2\mathbf b^{\tp}\mathbf c,
+\]
+<p>که دقیقاً همان (2) است.</p>
+</div>
+<div class="box intuition"><span class="label">شهود</span>
+<p>ماتریس‌های چرخش \(\mathbf Q_V\) و \(\mathbf Q_G\) مستقیماً در فاصله ظاهر شده‌اند. چون زمان رسیدن سیگنال برابر فاصله تقسیم بر سرعت نور است (\(\tau=d/c\))، چرخش هر موجودیت مستقیماً روی زمان رسیدن و فاز اثر می‌گذارد. اگر موجودیتی چرخیده باشد و ما ندانیم، هر استنتاج مکانی که از آن استفاده کند خطای ذاتی دارد. این انگیزه‌ی اصلی مقاله است (ملاحظه‌ی ۱).</p>
+</div>
+
+<!-- ============================ 5 ============================ -->
+<h2><span class="num">۵</span>مدل سیگنال ارسالی و دریافتی</h2>
+
+<p>فرض می‌شود حداقل \(M\ge2\) مسیر بین هر آنتن BS و هر آنتن UE وجود دارد: مسیر \(m=0\) همان LOS است و بقیه مسیرهای RIS. مسیرهای ناشی از پراکنده‌سازهای طبیعی (دیوار، اشیاء) خیلی ضعیف‌تر فرض و نادیده گرفته می‌شوند. (پانویس مقاله: این محدودکننده نیست، چون می‌شود یک بار با RIS خاموش و یک بار روشن ارسال کرد و با تفریق، سهم RIS را جدا کرد.)</p>
+
+<h3>۵-۱ پردازش فرستنده</h3>
+<ul>
+  <li>\(T\) نماد OFDM ارسال می‌شود، هر کدام با \(N\) زیرحامل. فرکانس زیرحامل \(n\)ام: \(f_n=f_c+n\Delta f-B/2\)، با فرکانس حامل \(f_c\)، فاصله‌ی زیرحامل \(\Delta f\) و پهنای باند \(B=N\Delta f\).</li>
+  <li>BS روی هر زیرحامل \(N_D\) جریان داده‌ی \(\mathbf x[n]=[x_1[n],\dots,x_{N_D}[n]]^{\tp}\) را با پیش‌کدگذار \(\mathbf F[n]\in\mathbb C^{N_B\times N_D}\) می‌فرستد: \(\mathbf x'[n]=\mathbf F[n]\mathbf x[n]\).</li>
+  <li>ستون \(d\)ام پیش‌کدگذار پرتو را به سمت یک نقطه‌ی از پیش تعیین‌شده‌ی \(\mathbf p_d\) می‌فرستد:
+  \[\mathbf f_d\triangleq\left[e^{-j2\pi f_n\tau_{\mathbf b_1\mathbf p_d}},\dots,e^{-j2\pi f_n\tau_{\mathbf b_{N_B}\mathbf p_d}}\right]^{\hr},\qquad \tau_{\mathbf b_b\mathbf p_d}=d_{\mathbf b_b\mathbf p_d}/c.\]
+  ترانهاده‌ی مزدوج (\(\hr\)) علامت فازها را مثبت می‌کند؛ یعنی هر آنتن به اندازه‌ی تأخیری که سیگنالش تا \(\mathbf p_d\) دارد، فاز را از قبل جبران می‌کند تا همه‌ی سیگنال‌ها در \(\mathbf p_d\) هم‌فاز جمع شوند. این همان پرتوسازی (beamforming) است.</li>
+  <li>قید توان: \(\tr(\mathbf F^{\hr}\mathbf F)=1\) و \(\Ex\{\mathbf x[n]\mathbf x^{\hr}[n]\}=\mathbf I_{N_D}\).</li>
+  <li>طول پیشوند چرخه‌ای (cyclic prefix) کافی فرض می‌شود تا تداخل بین نمادها حذف شود. دوره‌ی نمونه‌برداری \(T_s=1/B\).</li>
+</ul>
+
+<h3>۵-۲ سیگنال دریافتی: معادله‌ی (3)</h3>
+<p>پس از حذف پیشوند و اعمال FFT، سیگنال زیرحامل \(n\)ام در نماد \(t\)ام:</p>
+\[
+\mathbf y_t[n]=\mathbf H^{[0]}_{t,BU}[n]\mathbf F\mathbf x[n]+\sum_{m=1}^{M_1}\mathbf H^{[m]}_{t,RU}[n]\,\bm\Omega^{[m]}_t\,\mathbf H^{[m]}_{t,BR}[n]\mathbf F\mathbf x[n]+\mathbf n_t[n]=\bm\mu_t[n]+\mathbf n_t[n].\tag{3}
+\]
+<ul>
+  <li>\(\mathbf H^{[0]}_{t,BU}\in\mathbb C^{N_U\times N_B}\): کانال مستقیم BS به UE.</li>
+  <li>\(\mathbf H^{[m]}_{t,BR}\in\mathbb C^{N_R^{[m]}\times N_B}\): کانال BS به RIS شماره‌ی \(m\)؛ \(\mathbf H^{[m]}_{t,RU}\in\mathbb C^{N_U\times N_R^{[m]}}\): کانال RIS به UE.</li>
+  <li>\(\bm\Omega^{[m]}_t\): ماتریس قطری ضرایب بازتاب RIS (هر المان، فاز سیگنالی را که به آن رسیده تغییر می‌دهد).</li>
+  <li>\(\mathbf n_t[n]\sim\mathcal{CN}(\mathbf 0,N_0\mathbf I)\): نویز حرارتی گاوسی مختلط با چگالی طیفی \(N_0\).</li>
+  <li>\(\bm\mu_t[n]\): بخش بدون نویز (مفید) سیگنال. <strong>تمام اطلاعات درباره‌ی پارامترها در \(\bm\mu\) است</strong>؛ نویز فقط آن را پنهان می‌کند.</li>
+</ul>
+
+<h3>۵-۳ تجزیه‌ی ضرایب بازتاب: \(\bm\Omega=\gamma\bm\Gamma\)</h3>
+\[
+\bm\Omega^{[m]}_t=\gamma^{[m]}_t\,\bm\Gamma^{[m]},\qquad \bm\Gamma^{[m]}=\diag\!\left(e^{j\vartheta^{[m]}_1},\dots,e^{j\vartheta^{[m]}_{N_R^{[m]}}}\right).
+\]
+<ul>
+  <li>\(\gamma^{[m]}_t\): یک عدد مختلط که از نمادی به نماد دیگر تغییر می‌کند (بخش «سریع»). از این برای جداکردن مسیرها استفاده می‌شود (بخش ۱۱).</li>
+  <li>\(\bm\Gamma^{[m]}\): فاز ثابت هر المان در تمام \(T\) نماد (بخش «کند»). \(\vartheta_r\) فاز المان \(r\)ام است.</li>
+</ul>
+<p>در عمل \(\bm\Omega_t\) از یک کتاب کد مثل ماتریس DFT انتخاب می‌شود. هر سطر DFT را می‌توان به یک عدد اسکالر (همان \(\gamma\)) و یک بردار (همان \(\bm\Gamma\)) تجزیه کرد.</p>
+
+<div class="stmt"><div class="head">فرض ۱</div>تغییرات جهت‌گیری و مکان RIS خیلی کندتر از مدت \(T\) نماد OFDM اتفاق می‌افتد و کانال در طول ارسال و دریافت این \(T\) نماد ثابت است.</div>
+<p>این فرض محدودکننده نیست: یک نماد OFDM در فرکانس‌های عملی در حد میکروثانیه طول می‌کشد و مکان اشیاء در این مقیاس زمانی عملاً ثابت است. با این فرض اندیس \(t\) از ماتریس‌های کانال حذف می‌شود.</p>
+
+<h3>۵-۴ معادله‌ی (4): سیگنال مفید روی هر آنتن، جمله به جمله</h3>
+<p>سیگنال بدون نویز روی آنتن \(u\)ام UE:</p>
+\[
+\begin{aligned}
+\mu_{t,u}[n]= & \sum_{b=1}^{N_B}\left(\sum_{d=1}^{N_D}e^{j2\pi f_n\tau_{\mathbf b_b\mathbf p_d}}x_d[n]\right)\times\Bigg(\beta^{[0]}\rho^{[0]}e^{-j2\pi f_n(\epsilon^{[0]}+\tau^{[0]}_{\mathbf b_b\mathbf u_u})}\\
+& +\sum_{m=1}^{M_1}\gamma^{[m]}_t\beta^{[m]}e^{-j2\pi f_n\epsilon^{[m]}}\sum_{r=1}^{N_R^{[m]}}\rho^{[m]}_{\mathbf r_r}e^{j\vartheta^{[m]}_r}e^{-j2\pi f_n(\tau^{[m]}_{\mathbf b_b\mathbf r_r}+\tau^{[m]}_{\mathbf r_r\mathbf u_u})}\Bigg).
+\end{aligned}\tag{4}
+\]
+<table>
+<tr><th>جمله</th><th>معنا</th></tr>
+<tr><td class="sym">\(\sum_d e^{j2\pi f_n\tau_{\mathbf b_b\mathbf p_d}}x_d[n]\)</td><td>آنچه آنتن \(b\)ام BS می‌فرستد: داده‌ها ضربدر فاز پیش‌کدگذار.</td></tr>
+<tr><td class="sym">\(\beta^{[0]}\)</td><td>ضریب مختلط کانال مسیر LOS (مجهول؛ دامنه و فاز تصادفی).</td></tr>
+<tr><td class="sym">\(\rho^{[0]}=\frac{\lambda}{4\pi}\frac{1}{d^{[0]}_{\mathbf b_B\mathbf u_U}}\)</td><td>افت مسیر LOS (فرمول فضای آزاد فریس برای دامنه).</td></tr>
+<tr><td class="sym">\(\epsilon^{[0]},\ \epsilon^{[m]}\)</td><td>خطای همزمانی ساعت بین BS و UE. اثرش دقیقاً مثل یک تأخیر اضافه است.</td></tr>
+<tr><td class="sym">\(\tau^{[0]}_{\mathbf b_b\mathbf u_u}=d/c\)</td><td>تأخیر مسیر مستقیم از آنتن \(b\) تا آنتن \(u\).</td></tr>
+<tr><td class="sym">\(\gamma^{[m]}_t\beta^{[m]}\)</td><td>بخش سریع ضریب RIS ضربدر ضریب مختلط مجهول مسیر RIS.</td></tr>
+<tr><td class="sym">\(\rho^{[m]}_{\mathbf r_r}\)</td><td>افت مسیر از طریق المان \(r\)ام (بخش ۷؛ به جهت‌گیری RIS وابسته است).</td></tr>
+<tr><td class="sym">\(e^{j\vartheta_r}\)</td><td>فازی که المان \(r\)ام روی موج اعمال می‌کند.</td></tr>
+<tr><td class="sym">\(\tau_{\mathbf b_b\mathbf r_r}+\tau_{\mathbf r_r\mathbf u_u}\)</td><td>تأخیر کل: BS تا المان \(r\) و از المان \(r\) تا آنتن \(u\).</td></tr>
+</table>
+
+<div class="box proof"><span class="label">چرا تأخیر به شکل \(e^{-j2\pi f\tau}\) ظاهر می‌شود؟</span>
+<p>طبق خاصیت جابه‌جایی زمانی تبدیل فوریه، اگر \(s(t)\leftrightarrow S(f)\) آنگاه</p>
+\[s(t-\tau)\;\longleftrightarrow\;S(f)\,e^{-j2\pi f\tau}.\]
+<p>در OFDM هر زیرحامل یک فرکانس مجزای \(f_n\) است، پس تأخیر \(\tau\) در زیرحامل \(n\)ام فقط یک چرخش فاز به اندازه‌ی \(2\pi f_n\tau\) است. چون این فاز با \(f_n\) به صورت خطی تغییر می‌کند، با مشاهده‌ی شیب فاز در طول زیرحامل‌ها می‌شود \(\tau\) را تخمین زد. هرچه پهنای باند بیشتر، این شیب روی بازه‌ی بزرگ‌تری دیده می‌شود و تخمین دقیق‌تر است (در بخش ۹ این را دقیق نشان می‌دهیم).</p>
+</div>
+
+<!-- ============================ 6 ============================ -->
+<h2><span class="num">۶</span>میدان نزدیک و میدان دور</h2>
+
+<p>معادله‌ی (4) مدل دقیق (میدان نزدیک) است: فاصله‌ی هر جفت المان-آنتن جداگانه و دقیق حساب می‌شود. وقتی گیرنده خیلی دور باشد، می‌شود این فاصله‌ها را ساده کرد. این ساده‌سازی همان مدل میدان دور است (گزاره‌ی ۱ و پیوست A).</p>
+
+<h3>۶-۱ تقریب فاصله در میدان دور (پیوست A)</h3>
+<div class="box proof long"><span class="label">اثبات کامل، با جمله‌ای که مقاله دور می‌ریزد</span>
+<p>فاصله‌ی المان \(g\) (روی \(G\)) تا المان \(v\) (روی \(V\)) را با \(\bm\delta=\mathbf s_v-\mathbf s_g\) می‌نویسیم:</p>
+\[
+d_{\mathbf p_g\mathbf p_v}=\|\mathbf p_v-\mathbf p_g\|=\big\|d_{\mathbf p_G\mathbf p_V}\bm\Delta_{\mathbf p_G\mathbf p_V}+\bm\delta\big\|.
+\]
+<p>برای خلاصه‌نویسی \(d=d_{\mathbf p_G\mathbf p_V}\) و \(\bm\Delta=\bm\Delta_{\mathbf p_G\mathbf p_V}\) (با \(\|\bm\Delta\|=1\)). مربع را باز می‌کنیم:</p>
+\[
+d_{gv}^2=d^2+2d\,\bm\Delta^{\tp}\bm\delta+\|\bm\delta\|^2
+\;\Longrightarrow\;
+d_{gv}=d\sqrt{1+x},\qquad x=\frac{2\bm\Delta^{\tp}\bm\delta}{d}+\frac{\|\bm\delta\|^2}{d^2}.
+\]
+<p>وقتی ابعاد آرایه خیلی کوچک‌تر از فاصله است، \(x\ll1\). بسط دوجمله‌ای \(\sqrt{1+x}\approx1+\tfrac{x}{2}-\tfrac{x^2}{8}\) را به کار می‌بریم و جمله‌ها را تا مرتبه‌ی \(1/d\) نگه می‌داریم:</p>
+\[
+d_{gv}\approx d+\bm\Delta^{\tp}\bm\delta+\frac{\|\bm\delta\|^2-(\bm\Delta^{\tp}\bm\delta)^2}{2d}.
+\]
+<p>جمله‌ی آخر «جمله‌ی انحنا» است. مقاله با بسط مرتبه‌ی اول و نادیده گرفتن \(\|\bm\delta\|^2/d^2\) آن را حذف می‌کند و به تقریب میدان دور می‌رسد:</p>
+\[
+d_{\mathbf p_g\mathbf p_v}\approx d_{\mathbf p_G\mathbf p_V}+\bm\Delta^{\tp}_{\mathbf p_G\mathbf p_V}(\mathbf s_v-\mathbf s_g).
+\]
+<p>اثرش روی فاز (با \(\tau=d/c\) و \(f_n/c=1/\lambda_n\)):</p>
+\[
+e^{-j2\pi f_n\tau_{\mathbf p_g\mathbf p_v}}=e^{-j2\pi f_n\tau_{\mathbf p_G\mathbf p_V}}\;e^{-j\frac{2\pi}{\lambda_n}\bm\Delta^{\tp}_{\mathbf p_G\mathbf p_V}(\mathbf s_v-\mathbf s_g)}.
+\]
+<p><strong>از کجا می‌فهمیم حذف جمله‌ی انحنا مجاز است؟</strong> بزرگ‌ترین مقدار \(\|\bm\delta\|^2-(\bm\Delta^{\tp}\bm\delta)^2\) برای المانی در لبه‌ی آرایه به قطر \(D\) حدود \((D/2)^2\) است، پس خطای فاز ناشی از حذف آن حدود</p>
+\[
+\frac{2\pi}{\lambda}\cdot\frac{(D/2)^2}{2d}=\frac{\pi D^2}{4\lambda d}.
+\]
+<p>اگر بخواهیم این خطا از \(\pi/8\) کمتر باشد باید \(d\ge 2D^2/\lambda\). این همان <strong>فاصله‌ی فراونهوفر</strong> است: مرز رایج بین میدان نزدیک و دور.</p>
+</div>
+
+<h3>۶-۲ گزاره‌ی ۱: مدل میدان دور، معادله‌ی (5)</h3>
+<p>با جایگذاری تقریب بالا در (4) و تعریف بردارهای پاسخ آرایه</p>
+\[
+\mathbf a_{GV}(\bm\Delta_{\mathbf g\mathbf v_V})=e^{-j\frac{2\pi}{\lambda_n}\bm\Delta^{\tp}_{\mathbf g\mathbf v_V}\mathbf S_g},\qquad
+\mathbf a_{VG}(\bm\Delta_{\mathbf g\mathbf v_V})=e^{-j\frac{2\pi}{\lambda_n}\bm\Delta^{\tp}_{\mathbf g\mathbf v_V}\mathbf S_v}
+\]
+<p>(که نمایی عنصربه‌عنصر روی ستون‌های ماتریس مکان المان‌ها اعمال می‌شود)، سیگنال مفید به شکل زیر درمی‌آید:</p>
+\[
+\begin{aligned}
+\bm\mu_t[n]= & \;\beta^{[0]}\rho^{[0]}\epsilon^{[0]}_n\,\mathbf a_{UB}(\bm\Delta_{\mathbf b_B\mathbf u_U})\,\mathbf a^{\hr}_{BU}(\bm\Delta_{\mathbf b_B\mathbf u_U})\,e^{-j2\pi f_n\tau^{[0]}_{\mathbf b_B\mathbf u_U}}\\
+& +\sum_{m=1}^{M_1}\gamma_t^{[m]}\beta^{[m]}\rho^{[m]}_{\mathbf r_R}\epsilon^{[m]}_n\,\mathbf a_{UR}(\bm\Delta^{[m]}_{\mathbf r_R\mathbf u_U})\,\mathbf a^{\hr}_{RU}(\bm\Delta^{[m]}_{\mathbf r_R\mathbf u_U})\,\bm\Gamma^{[m]}\\
+& \qquad\times\mathbf a_{RB}(\bm\Delta^{[m]}_{\mathbf b_B\mathbf r_R})\,\mathbf a^{\hr}_{BR}(\bm\Delta^{[m]}_{\mathbf b_B\mathbf r_R})\,\mathbf F[n]\mathbf x[n]\,e^{-j2\pi f_n(\tau^{[m]}_{\mathbf b_B\mathbf r_R}+\tau^{[m]}_{\mathbf r_R\mathbf u_U})},
+\end{aligned}\tag{5}
+\]
+<p>با \(\epsilon^{[m]}_n=e^{-j2\pi f_n\epsilon^{[m]}}\). مقاله اشاره می‌کند که می‌شود (4) و (5) را ترکیب کرد: کاربر ممکن است در میدان نزدیک یک RIS و در میدان دور RIS دیگری باشد.</p>
+
+<div class="box intuition"><span class="label">شهود: چرا میدان نزدیک اطلاعات بیشتری دارد؟</span>
+<p>در مدل میدان دور (5) هر کانال به یک ضرب «بردار پاسخ گیرنده × بردار پاسخ فرستنده» تبدیل شده که فقط به <em>جهت‌ها</em> (\(\bm\Delta\)) بستگی دارد و یک تأخیر مشترک. یعنی همه‌ی آنتن‌های UE یک موج تخت می‌بینند که فقط از یک جهت آمده. اختلاف فاز بین آنتن‌ها فقط به زاویه بستگی دارد، نه به فاصله‌ی دقیق تا تک‌تک المان‌ها.</p>
+<p>در میدان نزدیک جبهه‌ی موج منحنی است: فاصله‌ی هر المان RIS تا هر آنتن UE یک تابع غیرخطی و جداگانه است. پس آنتن‌های مختلف UE «زاویه‌ی دید» کمی متفاوتی به هر المان RIS دارند. این تنوع، اطلاعات اضافه می‌سازد که در بخش ۱۲ نشان می‌دهیم همان چیزی است که تخمین خطای جهت‌گیری را ممکن می‌کند.</p>
+</div>
+
+<figure>
+<div class="two-fig">
+<div>
+<svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg" font-family="Vazirmatn, sans-serif" font-size="12">
+  <rect x="20" y="35" width="10" height="80" fill="#fbf5ea" stroke="#8a5a10"/>
+  <g fill="none" stroke="#23479c" stroke-width="1.3">
+    <path d="M60,20 A70,70 0 0 1 60,130"/>
+    <path d="M90,10 A95,95 0 0 1 90,140"/>
+    <path d="M120,8 A120,120 0 0 1 120,142"/>
+  </g>
+  <rect x="190" y="55" width="10" height="40" rx="2" fill="#edf6f1" stroke="#1f6b4f"/>
+  <text x="130" y="148" text-anchor="middle" fill="#1c2330">میدان نزدیک: جبهه‌ی موج منحنی</text>
+</svg>
+</div>
+<div>
+<svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg" font-family="Vazirmatn, sans-serif" font-size="12">
+  <rect x="20" y="35" width="10" height="80" fill="#fbf5ea" stroke="#8a5a10"/>
+  <g stroke="#23479c" stroke-width="1.3">
+    <line x1="150" y1="40" x2="150" y2="110"/>
+    <line x1="165" y1="40" x2="165" y2="110"/>
+    <line x1="180" y1="40" x2="180" y2="110"/>
+  </g>
+  <line x1="40" y1="75" x2="130" y2="75" stroke="#5a6476" stroke-dasharray="3 4"/>
+  <text x="85" y="68" text-anchor="middle" fill="#5a6476" font-size="11">فاصله‌ی زیاد</text>
+  <rect x="210" y="55" width="10" height="40" rx="2" fill="#edf6f1" stroke="#1f6b4f"/>
+  <text x="130" y="148" text-anchor="middle" fill="#1c2330">میدان دور: جبهه‌ی موج تقریباً تخت</text>
+</svg>
+</div>
+</div>
+<figcaption>شکل ۲: در میدان نزدیک هر آنتن گیرنده بخش متفاوتی از جبهه‌ی منحنی را می‌بیند؛ در میدان دور همه یک موج تخت با یک جهت می‌بینند.</figcaption>
+</figure>
+
+<!-- ============================ 7 ============================ -->
+<h2><span class="num">۷</span>افت مسیر وابسته به جهت‌گیری RIS</h2>
+
+<p>این بخش اولین سهم اصلی مقاله است: نشان می‌دهد چرخش RIS نه فقط فاز بلکه <strong>دامنه</strong>ی سیگنال بازتابی را هم تغییر می‌دهد.</p>
+
+<h3>۷-۱ توان دریافتی از یک المان: معادله‌ی (10)</h3>
+\[
+P^{[m]}_{o,bru}=P_{o,b}\,G_{br}\!\left(\mathbf a^{[m]}_{\mathbf p_b\mathbf p_r}\right)G_{ru}\!\left(\mathbf a^{[m]}_{\mathbf p_r\mathbf p_u}\right)\times\frac{G_{rb}\!\left(\mathbf a^{[m]}_{\mathbf p_r\mathbf p_b}\right)G_{ur}\!\left(\mathbf a^{[m]}_{\mathbf p_u\mathbf p_r}\right)}{\big(d^{[m]}_{\mathbf p_b\mathbf p_r}\big)^2\big(d^{[m]}_{\mathbf p_r\mathbf p_u}\big)^2}\left(\frac{\lambda}{4\pi}\right)^4\epsilon_p^2.\tag{10}
+\]
+<ul>
+  <li>\(P_{o,b}\): توان ارسالی آنتن \(b\)ام.</li>
+  <li>\(\mathbf a_{\mathbf g\mathbf v}\): بردار یکه‌ی جهت از المان \(g\) به المان \(v\). \(G(\cdot)\) بهره‌ی آنتن یا المان در آن جهت.</li>
+  <li>\(G_{br}\): بهره‌ی آنتن BS به سمت المان؛ \(G_{rb}\): بهره‌ی المان RIS به سمت BS (دریافت)؛ \(G_{ru}\): بهره‌ی المان به سمت UE (ارسال مجدد)؛ \(G_{ur}\): بهره‌ی آنتن UE به سمت المان.</li>
+  <li>\(\epsilon_p\): بازده عملی المان (در شبیه‌سازی \(0.5\)).</li>
+</ul>
+<div class="box intuition"><span class="label">شهود</span>
+<p>این در واقع دو بار فرمول فریس است: یک بار از BS تا المان (\(\propto 1/d_1^2\)) و یک بار از المان تا UE (\(\propto 1/d_2^2\)). المان RIS مثل یک گیرنده عمل می‌کند که توان را می‌گیرد و دوباره پخش می‌کند. به همین دلیل توان با حاصل‌ضرب \(d_1^2d_2^2\) کم می‌شود («افت مسیر دوگانه»).</p>
+</div>
+
+<h3>۷-۲ بهره‌ی المان RIS: گزاره‌های ۲ تا ۴</h3>
+<div class="stmt"><div class="head">گزاره‌ی ۲</div>
+بردار جهت از المان \(r\)ام RIS (چرخیده و جابه‌جاشده) به سمت آنتن \(b\)ام BS: \(\mathbf a^{[m]}_{\mathbf p_r\mathbf p_b}=(\mathbf p_b-\mathbf p^{[m]}_r)/d^{[m]}_{\mathbf p_r\mathbf p_b}\)، و به سمت آنتن \(u\)ام UE: \(\mathbf a^{[m]}_{\mathbf p_r\mathbf p_u}=(\mathbf p_u-\mathbf p^{[m]}_r)/d^{[m]}_{\mathbf p_r\mathbf p_u}\). بهره‌های متناظر:
+\[
+G_{rb}\big(\mathbf a^{[m]}_{\mathbf p_r\mathbf p_b}\big)=\pi\big(\mathbf a^{[m]\tp}_{\mathbf p_r\mathbf p_b}\mathbf a^{[m]}_{\mathbf p_R}\big)^{2q_0},\qquad
+G_{ru}\big(\mathbf a^{[m]}_{\mathbf p_r\mathbf p_u}\big)=\pi\big(\mathbf a^{[m]\tp}_{\mathbf p_r\mathbf p_u}\mathbf a^{[m]}_{\mathbf p_R}\big)^{2q_0},
+\]
+که \(\mathbf a^{[m]}_{\mathbf p_R}\) بردار یکه‌ی عمود بر سطح RIS (چرخیده) است و \(q_0\) ثابتی برای تنظیم الگوی بهره.
+</div>
+<div class="box proof"><span class="label">ضریب \(\pi\) از کجا می‌آید؟</span>
+<p>رابطه‌ی استاندارد بین بهره و دهانه‌ی مؤثر یک آنتن: \(G=4\pi A_e/\lambda^2\). مقاله فرض می‌کند المان‌ها با فاصله‌ی نصف طول موج چیده شده‌اند، پس سطح RIS برابر مجموع دهانه‌های مؤثر المان‌هاست و هر المان دهانه‌ی \(A_e=(\lambda/2)^2=\lambda^2/4\) دارد:</p>
+\[G_{\max}=\frac{4\pi}{\lambda^2}\cdot\frac{\lambda^2}{4}=\pi.\]
+<p>المان RIS یک صفحه‌ی رسانا با المان کم‌بهره‌ی کوچک فرض می‌شود، پس بهره‌اش تقریباً فقط به کسینوس زاویه‌ی بین جهت مورد نظر و بردار عمود بستگی دارد: \(\mathbf a^{\tp}\mathbf a_{\mathbf p_R}=\cos\omega\) (که \(\omega\) زاویه‌ی بین آن جهت و بردار عمود است). توان \(2q_0\) پهنای این الگو را تعیین می‌کند (در شبیه‌سازی \(q_0=0.285\)).</p>
+</div>
+
+<div class="stmt"><div class="head">گزاره‌ی ۳</div>
+بردار عمود بر RIS چرخیده: \(\mathbf a^{[m]}_{\mathbf p_R}=\mathbf Q^{[m]}_R\,\mathbf a^{[m]}_{\tilde{\mathbf p}_R}\)، که \(\mathbf a^{[m]}_{\tilde{\mathbf p}_R}\) بردار عمود RIS در حالت سالم است.
+</div>
+<p><strong>این نقطه‌ی کلیدی است:</strong> ماتریس چرخش \(\mathbf Q_R\) از طریق بردار عمود وارد بهره و در نتیجه وارد افت مسیر می‌شود.</p>
+
+<div class="stmt"><div class="head">فرض ۲ و گزاره‌ی ۴</div>
+آنتن‌های BS و UE همه‌جهته فرض می‌شوند: \(G_{br}=G_B\) و \(G_{ur}=G_U\). با این فرض، بهره‌ی المان به سمت UE:
+\[
+G_{ru}\big(\mathbf a^{[m]}_{\mathbf p_r\mathbf p_u}\big)=\frac{\pi}{\big(d^{[m]}_{\mathbf p_r\mathbf p_u}\big)^{2q_0}}\Big[\big(d^{[m]}_{\mathbf p_R\mathbf p_U}\bm\Delta^{[m]}_{\mathbf p_R\mathbf p_U}+\mathbf Q_U\tilde{\mathbf s}_u-\mathbf Q^{[m]}_R\tilde{\mathbf s}^{[m]}_r\big)^{\tp}\mathbf Q^{[m]}_R\mathbf a^{[m]}_{\tilde{\mathbf p}_R}\Big]^{2q_0},
+\]
+و مشابه آن برای \(G_{rb}\) با جایگزینی UE با BS.
+</div>
+<div class="box proof"><span class="label">اثبات</span>
+<p>از (1): \(\mathbf p_u-\mathbf p_r=(\mathbf p_U+\mathbf Q_U\tilde{\mathbf s}_u)-(\mathbf p_R+\mathbf Q_R\tilde{\mathbf s}_r)=d_{\mathbf p_R\mathbf p_U}\bm\Delta_{\mathbf p_R\mathbf p_U}+\mathbf Q_U\tilde{\mathbf s}_u-\mathbf Q_R\tilde{\mathbf s}_r\). با تقسیم بر \(d_{\mathbf p_r\mathbf p_u}\) بردار یکه‌ی \(\mathbf a_{\mathbf p_r\mathbf p_u}\) به دست می‌آید. با جایگذاری این و گزاره‌ی ۳ در گزاره‌ی ۲ و بیرون کشیدن \(1/d^{2q_0}\) از توان \(2q_0\)، رابطه‌ی بالا حاصل می‌شود.</p>
+</div>
+
+<h3>۷-۳ لم ۲: افت مسیر هر المان، معادله‌ی (11)</h3>
+\[
+\rho^{[m]}_{\mathbf p_r}=\frac{\lambda^2\,\big(\rho^{[m]}_{r,\mathbf p_r\mathbf p_b}\big)^{q_0}\big(\rho^{[m]}_{r,\mathbf p_r\mathbf p_u}\big)^{q_0}}{16\pi\big(d^{[m]}_{\mathbf p_b\mathbf p_r}\big)^{q_0+1}\big(d^{[m]}_{\mathbf p_r\mathbf p_u}\big)^{q_0+1}}\,\epsilon_p,\tag{11}
+\]
+<p>که «تصویر» بردار المان‌به‌آنتن روی بردار عمود است:</p>
+\[
+\rho^{[m]}_{r,\mathbf p_r\mathbf p_b}=\Big(d^{[m]}_{\mathbf p_R\mathbf p_B}\bm\Delta^{[m]}_{\mathbf p_R\mathbf p_B}+\mathbf Q_B\tilde{\mathbf s}_b-\mathbf Q^{[m]}_R\tilde{\mathbf s}^{[m]}_r\Big)^{\tp}\mathbf Q^{[m]}_R\mathbf a^{[m]}_{\tilde{\mathbf p}_R},
+\]
+<p>و مشابه آن \(\rho^{[m]}_{r,\mathbf p_r\mathbf p_u}\) برای UE.</p>
+<div class="box proof"><span class="label">اثبات گام‌به‌گام</span>
+<p>\(\rho\) دامنه است، پس جذر نسبت توان دریافتی به ارسالی. با فرض ۲ (و جذب \(G_B,G_U\) در تعریف SNR)، و با \(G_{rb}=\pi\rho_{r,b}^{2q_0}/d_b^{2q_0}\) و \(G_{ru}=\pi\rho_{r,u}^{2q_0}/d_u^{2q_0}\):</p>
+\[
+\frac{P}{P_o}=\frac{\pi\rho_{r,b}^{2q_0}}{d_b^{2q_0}}\cdot\frac{\pi\rho_{r,u}^{2q_0}}{d_u^{2q_0}}\cdot\frac{1}{d_b^2d_u^2}\cdot\frac{\lambda^4}{(4\pi)^4}\,\epsilon_p^2
+=\frac{\pi^2\lambda^4\,\rho_{r,b}^{2q_0}\rho_{r,u}^{2q_0}\,\epsilon_p^2}{256\,\pi^4\,d_b^{2q_0+2}d_u^{2q_0+2}}.
+\]
+<p>جذر می‌گیریم:</p>
+\[
+\rho_r=\sqrt{\frac{P}{P_o}}=\frac{\pi\lambda^2\rho_{r,b}^{q_0}\rho_{r,u}^{q_0}\epsilon_p}{16\pi^2d_b^{q_0+1}d_u^{q_0+1}}=\frac{\lambda^2\rho_{r,b}^{q_0}\rho_{r,u}^{q_0}}{16\pi\,d_b^{q_0+1}d_u^{q_0+1}}\,\epsilon_p .
+\]
+</div>
+
+<div class="box key"><span class="label">نکته کلیدی (ملاحظه‌ی ۳)</span>
+<p>جهت‌گیری RIS (\(\mathbf Q_R\)، یعنی زوایای \(\bm\Phi_R\)) در <strong>دو جا</strong> هست: در افت مسیر \(\rho_r\) و در پاسخ آرایه (فاز \(e^{-j2\pi f(\tau_{br}+\tau_{ru})}\) که فاصله‌هایش به مکان المان‌های چرخیده بستگی دارد). پس مشتق سیگنال نسبت به \(\bm\Phi_R\) با <strong>قاعده‌ی ضرب</strong> گرفته می‌شود:</p>
+\[
+\nabla_{\bm\Phi}\big(\rho_r\,e^{j\psi_r}\big)=(\nabla_{\bm\Phi}\rho_r)\,e^{j\psi_r}+\rho_r\,\nabla_{\bm\Phi}e^{j\psi_r}.
+\]
+<p>همین ساختار در معادله‌های (19) و (20) پیوست C دیده می‌شود. کارهای قبلی این وابستگی دامنه به جهت را نادیده می‌گرفتند.</p>
+</div>
+
+<!-- ============================ 8 ============================ -->
+<h2><span class="num">۸</span>بردار پارامترهای مجهول</h2>
+
+<p>سیگنال (4) به تعداد زیادی پارامتر بستگی دارد. مقاله آن‌ها را به دو گروه تقسیم می‌کند:</p>
+<ul>
+  <li><strong>پارامترهای هندسی</strong> \(\bm\eta_1\): زوایا، تأخیرها و جهت‌گیری‌ها. این‌ها به مکان و جهت ربط دارند و برای مکان‌یابی مفیدند.</li>
+  <li><strong>پارامترهای مزاحم</strong> \(\bm\eta_2\): خطای همزمانی \(\epsilon\) و بخش حقیقی و موهومی ضرایب مختلط کانال \(\beta_R=\Rl\{\beta\},\ \beta_I=\Im\{\beta\}\).</li>
+</ul>
+
+<h3>۸-۱ مسیر LOS: معادله‌ی (6)</h3>
+\[
+\bm\eta^{[0]}\triangleq\Big[\underbrace{\theta^{[0]}_{\mathbf b_B\mathbf u_U},\ \phi^{[0]}_{\mathbf b_B\mathbf u_U},\ \tau^{[0]}_{\mathbf b_B\mathbf u_U},\ \bm\Phi^{\tp}_U}_{\bm\eta_1^{[0]}},\ \underbrace{\epsilon^{[0]},\ \beta^{[0]}_R,\ \beta^{[0]}_I}_{\bm\eta_2^{[0]}}\Big]^{\tp}.\tag{6}
+\]
+<p>یعنی زاویه‌ی ارتفاع و سمت از BS به UE، تأخیر، سه زاویه‌ی جهت‌گیری UE (این شش تا بخش هندسی \(\bm\eta_1^{[0]}\) هستند)، و سه پارامتر مزاحم \(\bm\eta_2^{[0]}\).</p>
+
+<h3>۸-۲ مسیرهای RIS: معادله‌های (7) تا (9)</h3>
+<p>برای هر RIS: زوایای RIS به UE \((\theta_{\mathbf r_R\mathbf u_U},\phi_{\mathbf r_R\mathbf u_U})\)، زوایای BS به RIS \((\theta_{\mathbf b_B\mathbf r_R},\phi_{\mathbf b_B\mathbf r_R})\)، دو تأخیر \(\tau_{\mathbf r_R\mathbf u_U},\tau_{\mathbf b_B\mathbf r_R}\)، سه زاویه‌ی جهت‌گیری RIS \(\bm\Phi_R\)، و سه پارامتر مزاحم \(\epsilon,\beta_R,\beta_I\). بردار پارامترهای مسیر \(m\)ام:</p>
+\[
+\bm\eta^{[m]}\triangleq\Big[\theta^{[m]}_{\mathbf r_R\mathbf u_U},\phi^{[m]}_{\mathbf r_R\mathbf u_U},\theta^{[m]}_{\mathbf b_B\mathbf r_R},\phi^{[m]}_{\mathbf b_B\mathbf r_R},\tau^{[m]}_{\mathbf r_R\mathbf u_U},\tau^{[m]}_{\mathbf b_B\mathbf r_R},\bm\Phi^{[m]\tp}_R,\ \epsilon^{[m]},\beta^{[m]}_R,\beta^{[m]}_I\Big]^{\tp}=\Big[\bm\eta_1^{[m]\tp},\bm\eta_2^{[m]\tp}\Big]^{\tp}\tag{9}
+\]
+<p>یعنی \(6+3=9\) پارامتر هندسی و \(3\) پارامتر مزاحم، جمعاً \(12\) پارامتر حقیقی برای هر RIS. معادله‌های (7) و (8) همین پارامترها را برای همه‌ی RISها کنار هم می‌گذارند: \(\bm\eta=[\bm\eta^{[0]\tp},\bm\eta^{[1]\tp},\dots,\bm\eta^{[M_1]\tp}]^{\tp}\).</p>
+
+<div class="stmt"><div class="head">ملاحظه‌ی ۲</div>
+فرض شده BS دقیقاً معلوم است (\(\mathbf p_b=\tilde{\mathbf p}_b\)) و به‌عنوان مبدأ مختصات به کار می‌رود. اگر همه‌ی RISها هم دقیقاً معلوم باشند، پارامترهای پیوند BS-RIS (\(\theta_{\mathbf b_B\mathbf r_R},\phi_{\mathbf b_B\mathbf r_R},\tau_{\mathbf b_B\mathbf r_R},\bm\Phi_R\)) معلوم‌اند و از بردار حذف می‌شوند.
+</div>
+
+<!-- ============================ 9 ============================ -->
+<h2 class="page-break"><span class="num">۹</span>اطلاعات فیشر از صفر</h2>
+
+<p>این بخش ابزار ریاضی اصلی مقاله را از پایه می‌سازد. اگر با اطلاعات فیشر آشنا هستید، می‌توانید مستقیم به ۹-۴ بروید.</p>
+
+<h3>۹-۱ ایده‌ی پایه با یک پارامتر</h3>
+<p>فرض کنید \(y=\mu(\theta)+n\) با \(n\sim\mathcal N(0,\sigma^2)\). تابع درست‌نمایی \(f(y;\theta)\) است. اطلاعات فیشر:</p>
+\[
+J(\theta)=\Ex\!\left[\left(\frac{\partial\ln f(y;\theta)}{\partial\theta}\right)^2\right]=-\Ex\!\left[\frac{\partial^2\ln f(y;\theta)}{\partial\theta^2}\right].
+\]
+<p>برای این مدل گاوسی: \(\ln f=-\frac{(y-\mu(\theta))^2}{2\sigma^2}+\text{const}\)، پس \(\partial_\theta\ln f=\frac{(y-\mu)\mu'(\theta)}{\sigma^2}\) و</p>
+\[
+J(\theta)=\frac{\mu'(\theta)^2}{\sigma^4}\,\Ex\big[(y-\mu)^2\big]=\frac{\mu'(\theta)^2}{\sigma^4}\,\sigma^2=\frac{\mu'(\theta)^2}{\sigma^2}.
+\]
+<p>کران کرامر-رائو (CRB): برای هر تخمین‌گر نااریب \(\operatorname{var}(\hat\theta)\ge 1/J(\theta)=\sigma^2/\mu'(\theta)^2\).</p>
+<div class="box intuition"><span class="label">شهود</span>
+<p>\(\mu'(\theta)\) می‌گوید سیگنال چقدر به تغییر پارامتر حساس است. اگر تغییر کوچک \(\theta\) سیگنال را خیلی عوض کند (\(|\mu'|\) بزرگ) و نویز کم باشد، می‌توان \(\theta\) را دقیق تشخیص داد. اگر \(\mu'=0\)، تغییر پارامتر هیچ ردی در داده نمی‌گذارد: اطلاعات صفر و کران بی‌نهایت. این ایده، بعداً در قلب نتیجه‌ی اصلی مقاله است.</p>
+</div>
+
+<h3>۹-۲ حالت چندپارامتری</h3>
+<p>برای بردار \(\bm\eta\in\mathbb R^N\)، ماتریس اطلاعات فیشر (FIM):</p>
+\[
+\mathbf J=\Ex\!\left[\nabla_{\bm\eta}\ln f\,(\nabla_{\bm\eta}\ln f)^{\tp}\right]=-\Ex\!\left[\frac{\partial^2\ln f}{\partial\bm\eta\,\partial\bm\eta^{\tp}}\right],
+\qquad
+\Ex\{(\hat{\bm\eta}-\bm\eta)(\hat{\bm\eta}-\bm\eta)^{\tp}\}\succeq\mathbf J^{-1}.
+\]
+<p>نامساوی \(\mathbf A\succeq\mathbf B\) یعنی \(\mathbf A-\mathbf B\) نیمه‌معین مثبت است؛ نتیجه‌ی مهمش این است که هر عنصر قطری \(\mathbf A\) از عنصر قطری متناظر \(\mathbf B\) بزرگ‌تر یا مساوی است: \(\operatorname{var}(\hat\eta_i)\ge[\mathbf J^{-1}]_{ii}\). توجه کنید \([\mathbf J^{-1}]_{ii}\) معمولاً از \(1/[\mathbf J]_{ii}\) بزرگ‌تر است، چون سایر مجهول‌ها هم اطلاعات را می‌گیرند (بخش ۱۰).</p>
+<p>در نماد مقاله: \(\mathbf F_{\bm v}(\bm w;\bm x,\bm y)\triangleq\Ex_{\bm v}\{[\nabla_{\bm x}\ln f(\bm w)][\nabla_{\bm y}\ln f(\bm w)]^{\tp}\}\).</p>
+
+<h3>۹-۳ FIM بیزی (عمومی): تعریف ۱ و معادله‌ی (12)</h3>
+<p>وقتی پارامترها خودشان تصادفی‌اند و توزیع پیشین \(\chi(\bm\eta)\) دارند، تابع چگالی مشترک \(\chi(\mathbf y,\bm\eta)=\chi(\mathbf y|\bm\eta)\chi(\bm\eta)\) است. لگاریتم آن جمع دو جمله است، پس:</p>
+\[
+\mathbf J_{\mathbf y;\bm\eta}\triangleq\Ex_{\mathbf y;\bm\eta}\!\left[-\frac{\partial^2\ln\chi(\mathbf y;\bm\eta)}{\partial\bm\eta\partial\bm\eta^{\tp}}\right]
+=\underbrace{-\Ex_{\mathbf y}\!\left[\frac{\partial^2\ln\chi(\mathbf y|\bm\eta)}{\partial\bm\eta\partial\bm\eta^{\tp}}\right]}_{\mathbf J_{\mathbf y|\bm\eta}}
+\underbrace{-\Ex_{\bm\eta}\!\left[\frac{\partial^2\ln\chi(\bm\eta)}{\partial\bm\eta\partial\bm\eta^{\tp}}\right]}_{\mathbf J_{\bm\eta}}.\tag{12}
+\]
+<p>جمله‌ی اول \(\mathbf J_{\mathbf y|\bm\eta}\) اطلاعاتی است که از مشاهده می‌آید و جمله‌ی دوم \(\mathbf J_{\bm\eta}\) اطلاعاتی است که از توزیع پیشین می‌آید. در نتیجه کران بیزی: \(\Ex_{\mathbf y;\bm\eta}\{(\hat{\bm\eta}-\bm\eta)(\hat{\bm\eta}-\bm\eta)^{\tp}\}\succeq\mathbf J^{-1}_{\mathbf y;\bm\eta}\).</p>
+
+<div class="box example"><span class="label">مثال: پیشین گاوسی</span>
+<p>اگر \(\bm\eta\sim\mathcal N(\bar{\bm\eta},\bm\Sigma)\)، آنگاه \(\ln\chi(\bm\eta)=-\tfrac12(\bm\eta-\bar{\bm\eta})^{\tp}\bm\Sigma^{-1}(\bm\eta-\bar{\bm\eta})+\text{const}\) و مشتق دوم منفی آن \(\bm\Sigma^{-1}\) است. پس <strong>اطلاعات پیشین = وارون کوواریانس پیشین</strong>. هرچه پیشین دقیق‌تر (\(\bm\Sigma\) کوچک‌تر)، اطلاعات بیشتر. «بدون اطلاعات پیشین» یعنی \(\bm\Sigma\to\infty\) و \(\mathbf J_{\bm\eta}=\mathbf 0\).</p>
+<p>در شبیه‌سازی مقاله، اطلاعات پیشین درباره‌ی جهت‌گیری با نماد \(\bm\Xi\) و به صورت کسری از SNR بیان شده؛ مثلاً \(\Xi=0.3P/\sigma^2\) یعنی دقت پیشین برابر \(0.3\) برابر SNR است.</p>
+</div>
+
+<h3>۹-۴ تابع درست‌نمایی: معادله‌ی (13)</h3>
+<p>نویز گاوسی مختلط دایره‌ای است: \(\mathbf n\sim\mathcal{CN}(\mathbf 0,N_0\mathbf I)\)، با چگالی \(\propto\exp(-\|\mathbf y-\bm\mu\|^2/N_0)\). با باز کردن مربع:</p>
+\[
+\|\mathbf y-\bm\mu\|^2=\|\mathbf y\|^2-2\Rl\{\bm\mu^{\hr}\mathbf y\}+\|\bm\mu\|^2.
+\]
+<p>جمله‌ی \(\|\mathbf y\|^2\) به پارامترها ربطی ندارد و در ثابت تناسب می‌رود. با جمع روی \(N\) زیرحامل (که نویزشان مستقل است):</p>
+\[
+\chi(\mathbf y_t[n]|\bm\eta)\propto\exp\left\{\frac{2}{N_0}\sum_{n=1}^{N}\Rl\{\bm\mu_t^{\hr}[n]\mathbf y_t[n]\}-\frac{1}{N_0}\sum_{n=1}^{N}\|\bm\mu_t[n]\|_2^2\right\}.\tag{13}
+\]
+
+<h3>۹-۵ FIM از مشاهده: معادله‌ی (14)</h3>
+\[
+[\mathbf J_{\mathbf y|\bm\eta}]_{[v,g]}=\frac{2}{N_0}\sum_{u=1}^{N_U}\sum_{n=1}^{N}\sum_{t=1}^{T}\Rl\left\{\nabla^{\hr}_{[\bm\eta]_{[v]}}\mu_{t,u}[n]\;\nabla_{[\bm\eta]_{[g]}}\mu_{t,u}[n]\right\}.\tag{14}
+\]
+<div class="box proof long"><span class="label">اثبات (14) از (13)</span>
+<p>یک مشاهده‌ی مختلط \(y=\mu(\bm\eta)+n\) با \(n\sim\mathcal{CN}(0,N_0)\) را در نظر بگیرید (چند مشاهده‌ی مستقل فقط جمع می‌شوند). \(\ln f=-|y-\mu|^2/N_0+c\). مشتق نسبت به \(\eta_v\) (با \(\mu_v\triangleq\partial\mu/\partial\eta_v\)):</p>
+\[
+\frac{\partial\ln f}{\partial\eta_v}=\frac{1}{N_0}\big(\mu_v^*(y-\mu)+\mu_v(y-\mu)^*\big)=\frac{2}{N_0}\Rl\{\mu_v^*\,n\}.
+\]
+<p>اکنون از تعریف \(J_{vg}=\Ex[\partial_v\ln f\,\partial_g\ln f]\) استفاده می‌کنیم. برای نویز دایره‌ای \(\Ex[nn^*]=N_0\) و \(\Ex[nn]=0\). با \(\Rl\{z\}=(z+z^*)/2\):</p>
+\[
+\Ex\big[\Rl\{\mu_v^*n\}\Rl\{\mu_g^*n\}\big]=\tfrac14\Ex\big[(\mu_v^*n+\mu_vn^*)(\mu_g^*n+\mu_gn^*)\big]=\tfrac14\big(\mu_v^*\mu_gN_0+\mu_v\mu_g^*N_0\big)=\frac{N_0}{2}\Rl\{\mu_v^*\mu_g\}.
+\]
+<p>(دو جمله‌ی دیگر شامل \(\Ex[nn]\) یا \(\Ex[n^*n^*]\) هستند و صفرند.) پس</p>
+\[
+J_{vg}=\frac{4}{N_0^2}\cdot\frac{N_0}{2}\Rl\{\mu_v^*\mu_g\}=\frac{2}{N_0}\Rl\{\mu_v^*\mu_g\}.
+\]
+<p>با جمع روی آنتن‌ها \(u\)، زیرحامل‌ها \(n\) و نمادها \(t\)، معادله‌ی (14) به دست می‌آید. مشتق‌های \(\nabla\mu\) در پیوست C آمده‌اند (بخش ۹-۷).</p>
+</div>
+
+<div class="box key"><span class="label">نکته کلیدی: نگاه هندسی به FIM</span>
+<p>اگر همه‌ی مشاهده‌ها را در یک بردار بزرگ بچینیم و \(\mathbf g_i=\partial\bm\mu/\partial\eta_i\) را «بردار حساسیت» پارامتر \(i\)ام بنامیم، و ضرب داخلی حقیقی \(\langle\mathbf a,\mathbf b\rangle=\frac{2}{N_0}\Rl\{\mathbf a^{\hr}\mathbf b\}\) را تعریف کنیم، آنگاه</p>
+\[\mathbf J_{ij}=\langle\mathbf g_i,\mathbf g_j\rangle,\]
+<p>یعنی FIM یک <strong>ماتریس گرام</strong> از بردارهای حساسیت است. این نگاه، فهم بخش‌های ۱۰ و ۱۲ را خیلی ساده می‌کند.</p>
+</div>
+
+<h3>۹-۶ مثال آموزشی: تخمین تأخیر وقتی فاز مجهول است</h3>
+<div class="box example long"><span class="label">مثال کامل؛ همان سازوکاری که نتیجه‌ی اصلی مقاله را می‌سازد</span>
+<p>یک آنتن، یک مسیر، \(N\) زیرحامل: \(\mu_n=\beta e^{-j2\pi f_n\tau}\) با \(\beta=\beta_R+j\beta_I\) مجهول. پارامترها \([\tau,\beta_R,\beta_I]\). با \(e_n=e^{-j2\pi f_n\tau}\):</p>
+\[
+\frac{\partial\mu_n}{\partial\tau}=-j2\pi f_n\beta e_n,\qquad \frac{\partial\mu_n}{\partial\beta_R}=e_n,\qquad \frac{\partial\mu_n}{\partial\beta_I}=je_n.
+\]
+<p>با (14) (و \(|e_n|=1\)):</p>
+\[
+J_{\tau\tau}=\frac{2}{N_0}(2\pi)^2|\beta|^2\sum_nf_n^2,\quad
+J_{\tau\beta_R}=\frac{2}{N_0}2\pi\beta_I\sum_nf_n,\quad
+J_{\tau\beta_I}=-\frac{2}{N_0}2\pi\beta_R\sum_nf_n,\quad
+\mathbf J_{\beta\beta}=\frac{2}{N_0}N\,\mathbf I_2.
+\]
+<p>(برای مثال: \(\Rl\{(-j2\pi f_n\beta e_n)^*e_n\}=\Rl\{j2\pi f_n\beta^*\}=2\pi f_n\beta_I\).) اگر \(\beta\) معلوم بود، اطلاعات تأخیر \(J_{\tau\tau}\propto\sum f_n^2\approx Nf_c^2\) بود که عدد عظیمی است (فرکانس حامل). ولی چون \(\beta\) مجهول است، با فرمول EFIM (بخش ۱۰):</p>
+\[
+J^{e}_{\tau}=J_{\tau\tau}-\mathbf J_{\tau\beta}\mathbf J_{\beta\beta}^{-1}\mathbf J_{\beta\tau}
+=\frac{2}{N_0}(2\pi)^2|\beta|^2\left[\sum_nf_n^2-\frac{(\sum_nf_n)^2}{N}\right]
+=\frac{2}{N_0}(2\pi)^2|\beta|^2\sum_n(f_n-\bar f)^2 .
+\]
+<p><strong>فرکانس حامل کاملاً حذف شد</strong> و فقط پراکندگی فرکانس‌ها (یعنی پهنای باند) باقی ماند. دلیل: تأخیر روی همه‌ی زیرحامل‌ها یک فاز مشترک \(2\pi f_c\tau\) اضافه می‌کند که از فاز مجهول \(\beta\) قابل تشخیص نیست؛ فقط بخش «شیب فاز در طول فرکانس» اطلاعات دارد.</p>
+<p>این دقیقاً همان سازوکاری است که در بخش ۱۲ می‌بینیم: هر اثری از یک پارامتر که بتوان آن را با یک ضریب مختلط مشترک توضیح داد، توسط فاز مجهول \(\beta\) «بلعیده» می‌شود.</p>
+</div>
+
+<h3>۹-۷ مشتق‌های سیگنال (پیوست C) به زبان ساده</h3>
+<p>مقاله سیگنال را به سهم مستقیم و سهم RISها جدا می‌کند: \(\mu_{t,u}[n]=\mu_{t,u,\mathrm{DB}}[n]+\sum_m\mu^{[m]}_{t,u,\mathrm{DBR}}[n]\). سپس با قاعده‌ی زنجیره‌ای مشتق می‌گیرد. الگوی همه‌ی مشتق‌ها:</p>
+<ul>
+  <li><strong>نسبت به تأخیر:</strong> \(\nabla_\nu\mu=(-j2\pi f_n)\nabla_\nu\tau\cdot\mu\) و \(\nabla_\nu\tau=\nabla_\nu d/c\).</li>
+  <li><strong>فاصله نسبت به زوایا:</strong> \(\nabla_{\theta}d_{\mathbf g\mathbf v}=\frac{d_{GV}}{d_{\mathbf g\mathbf v}}(\nabla_\theta\bm\Delta_{GV})^{\tp}(\mathbf s_v-\mathbf s_g)\)، و مشابه برای \(\phi\)، با
+  \(\nabla_\theta\bm\Delta=[\cos\phi\cos\theta,\ \sin\phi\cos\theta,\ -\sin\theta]^{\tp}\) و \(\nabla_\phi\bm\Delta=[-\sin\phi\sin\theta,\ \cos\phi\sin\theta,\ 0]^{\tp}\).</li>
+  <li><strong>فاصله نسبت به جهت‌گیری</strong> (معادله‌های 21 تا 24): مثلاً
+  \[\nabla_{\bm\Phi_V}d_{\mathbf g\mathbf v}=\frac{d_{GV}}{d_{\mathbf g\mathbf v}}\bm\Delta_{GV}^{\tp}\nabla_{\bm\Phi_V}(\mathbf Q_V\tilde{\mathbf s}_v)-\frac{1}{d_{\mathbf g\mathbf v}}(\nabla_{\bm\Phi_V}\mathbf Q_V\tilde{\mathbf s}_v)^{\tp}\mathbf s_g.\]
+  این از مشتق \(d=\|\mathbf p_v-\mathbf p_g\|\) به دست می‌آید: \(\nabla d=\frac{(\mathbf p_v-\mathbf p_g)^{\tp}}{d}\nabla(\mathbf p_v-\mathbf p_g)\) و فقط \(\mathbf s_v=\mathbf Q_V\tilde{\mathbf s}_v\) به \(\bm\Phi_V\) وابسته است.</li>
+  <li><strong>افت مسیر</strong> (معادله‌های 25 و 26): مشتق (11) با قاعده‌ی توان و ضرب، مثلاً \(\nabla_\nu\rho_r\) شامل \(q_0\rho^{q_0-1}\nabla\rho_{r,\cdot}\) و \(-(q_0+1)d^{-q_0-2}\nabla d\) است.</li>
+  <li><strong>پارامترهای مزاحم:</strong> \(\nabla_{\epsilon}\mu=(-j2\pi f_n)\mu\)، \(\nabla_{\beta_R}\mu=\mu/\beta\)، \(\nabla_{\beta_I}\mu=j\nabla_{\beta_R}\mu\).</li>
+</ul>
+<p>آخرین مورد بسیار مهم است: <strong>بردار حساسیت \(\beta_I\) دقیقاً \(j\) برابر بردار حساسیت \(\beta_R\) است.</strong> پس با هم، هر ضریب مختلط ثابت ضربدر \(\nabla_{\beta_R}\mu\) را می‌پوشانند.</p>
+
+<!-- ============================ 10 ============================ -->
+<h2><span class="num">۱۰</span>EFIM، مکمل شور و تخمین‌پذیری</h2>
+
+<h3>۱۰-۱ تعریف ۲: ماتریس فیشر معادل</h3>
+<p>اندازه‌ی FIM با تعداد پارامترها به صورت مربعی رشد می‌کند. معمولاً فقط بخشی از پارامترها (\(\bm\eta_1\)) برای ما مهم است. با افراز</p>
+\[
+\mathbf J_{\mathbf y;\bm\eta}=\begin{bmatrix}\mathbf J_{\mathbf y;\bm\eta_1} & \mathbf J_{\mathbf y;\bm\eta_1,\bm\eta_2}\\ \mathbf J^{\tp}_{\mathbf y;\bm\eta_1,\bm\eta_2} & \mathbf J_{\mathbf y;\bm\eta_2}\end{bmatrix},\qquad \bm\eta_1\in\mathbb R^n,\ \bm\eta_2\in\mathbb R^{N-n},
+\]
+<p>ماتریس فیشر معادل (EFIM) برابر <strong>مکمل شور</strong> است:</p>
+\[
+\mathbf J^{e}_{\mathbf y;\bm\eta_1}=\mathbf J_{\mathbf y;\bm\eta_1}-\underbrace{\mathbf J_{\mathbf y;\bm\eta_1,\bm\eta_2}\mathbf J^{-1}_{\mathbf y;\bm\eta_2}\mathbf J^{\tp}_{\mathbf y;\bm\eta_1,\bm\eta_2}}_{\mathbf J^{nu}_{\mathbf y;\bm\eta_1}}.
+\]
+<p>جمله‌ی کسرشده \(\mathbf J^{nu}_{\mathbf y;\bm\eta_1}\) همان اطلاعاتی است که به خاطر مجهول بودن پارامترهای مزاحم از دست می‌رود. ویژگی اصلی: \((\mathbf J^{e}_{\mathbf y;\bm\eta_1})^{-1}=[\mathbf J^{-1}_{\mathbf y;\bm\eta}]_{[1:n,1:n]}\). یعنی EFIM همان کرانی را می‌دهد که از وارون کل FIM به دست می‌آمد، ولی با ماتریسی کوچک‌تر.</p>
+<div class="box proof"><span class="label">چرا این ویژگی برقرار است؟</span>
+<p>فرمول وارون ماتریس بلوکی: برای \(\mathbf M=\begin{bmatrix}\mathbf A & \mathbf B\\ \mathbf B^{\tp} & \mathbf C\end{bmatrix}\) با \(\mathbf C\) وارون‌پذیر،</p>
+\[
+\mathbf M^{-1}=\begin{bmatrix}(\mathbf A-\mathbf B\mathbf C^{-1}\mathbf B^{\tp})^{-1} & \cdots\\ \cdots & \cdots\end{bmatrix}.
+\]
+<p>بلوک بالا-چپ وارون، دقیقاً وارون مکمل شور است. این را با ضرب مستقیم یا با حذف گاوسی بلوکی می‌توان بررسی کرد.</p>
+</div>
+<div class="box example"><span class="label">مثال عددی ۲×۲</span>
+<p>\(\mathbf J=\begin{bmatrix}4&2\\2&2\end{bmatrix}\). اگر پارامتر دوم معلوم بود، اطلاعات پارامتر اول \(4\) بود (کران \(0.25\)). با مجهول بودن پارامتر دوم: \(J^e=4-2\cdot\tfrac12\cdot2=2\) (کران \(0.5\)). بررسی: \(\mathbf J^{-1}=\tfrac14\begin{bmatrix}2&-2\\-2&4\end{bmatrix}\)، پس \([\mathbf J^{-1}]_{11}=0.5=1/J^e\). ✓ پارامتر مزاحم نصف اطلاعات را خورد، چون حساسیت سیگنال به دو پارامتر همبسته است (\(J_{12}\ne0\)).</p>
+</div>
+<div class="box intuition"><span class="label">شهود هندسی EFIM</span>
+<p>با نگاه گرام (بخش ۹-۵)، برای یک پارامتر مورد علاقه:</p>
+\[
+J^{e}=\big\|\mathbf g_1-\Pi_{\mathcal S}\,\mathbf g_1\big\|^2,\qquad \mathcal S=\operatorname{span}_{\mathbb R}\{\mathbf g_2,\mathbf g_3,\dots\},
+\]
+<p>یعنی EFIM مربع طول بخشی از بردار حساسیت پارامتر مورد علاقه است که <em>عمود</em> بر بردارهای حساسیت پارامترهای مزاحم است. اگر اثر تغییر \(\eta_1\) روی سیگنال را بتوان دقیقاً با ترکیبی از تغییرات پارامترهای مزاحم تقلید کرد، \(\mathbf g_1\in\mathcal S\) و \(J^e=0\): پارامتر غیرقابل تخمین است.</p>
+</div>
+
+<h3>۱۰-۲ تعریف ۳: تخمین‌پذیری</h3>
+<div class="stmt"><div class="head">تعریف ۳</div>بردار پارامتر \(\bm\eta\) تخمین‌پذیر است اگر و فقط اگر FIM عمومی معین مثبت باشد: \(\mathbf J_{\mathbf y;\bm\eta}\succ0\).</div>
+<p>معین مثبت یعنی برای هر بردار غیرصفر \(\mathbf v\): \(\mathbf v^{\tp}\mathbf J\mathbf v>0\). معادلاً همه‌ی مقادیر ویژه مثبت‌اند و ماتریس وارون‌پذیر است، پس CRB متناهی است. به همین دلیل مقاله در شبیه‌سازی کوچک‌ترین مقدار ویژه‌ی EFIM (\(\lambda^e_{\min}\)) را رسم می‌کند: نزدیک صفر یعنی «تقریباً غیرقابل تخمین».</p>
+
+<h3>۱۰-۳ گزاره‌ی ۵ و پیوست B</h3>
+<div class="stmt"><div class="head">گزاره‌ی ۵</div>
+فرض کنید \(\bm\eta=[\bm\eta_1^{\tp},\eta_{N_\eta}]^{\tp}\) که \(\eta_{N_\eta}\) مزاحم است. برای زیرمجموعه‌ی \(\tilde{\bm\eta}=[\eta_v,\eta_{N_\eta}]^{\tp}\) (یک پارامتر از \(\bm\eta_1\) همراه پارامتر مزاحم): اگر EFIM حاصل \(J^e_{\mathbf y;\tilde{\bm\eta}}=0\) باشد، آنگاه \(\mathbf J^e_{\mathbf y;\bm\eta_1}\not\succ0\).
+</div>
+<div class="box proof"><span class="label">اثبات و منطق</span>
+<p><strong>گام ۱ (پیوست B):</strong> اگر ماتریس متقارنی روی قطرش صفر داشته باشد، معین مثبت نیست. بردار \(\mathbf v\) را صفر به جز درایه‌ی \(n\)ام انتخاب کنید: \(\mathbf v^{\tp}\mathbf J\mathbf v=v_n^2[\mathbf J]_{nn}=0\)، که با شرط \(>0\) تناقض دارد.</p>
+<p><strong>گام ۲ (منطق اطلاعاتی):</strong> \(J^e_{\mathbf y;\tilde{\bm\eta}}\) اطلاعات \(\eta_v\) است وقتی فقط \(\eta_{N_\eta}\) مجهول باشد و بقیه معلوم فرض شوند. مجهول کردن پارامترهای بیشتر هرگز اطلاعات را زیاد نمی‌کند. پس اگر حتی در این حالت خوش‌بینانه اطلاعات صفر است، در EFIM کامل هم عنصر قطری متناظر \(\eta_v\) صفر است و طبق گام ۱، \(\mathbf J^e_{\mathbf y;\bm\eta_1}\) معین مثبت نیست.</p>
+<p>کاربرد: برای اثبات اینکه کل بردار هندسی تخمین‌پذیر نیست، کافی است نشان دهیم <em>یک</em> پارامتر (جهت‌گیری RIS) در کنار <em>یک</em> مزاحم (\(\beta\)) اطلاعات صفر دارد.</p>
+</div>
+
+<!-- ============================ 11 ============================ -->
+<h2><span class="num">۱۱</span>جداسازی مسیرها با فرض‌های ۳ و ۴</h2>
+
+<p>بدون ساده‌سازی، FIM با مشتق‌های پیوست C عملاً قابل تحلیل نیست. دو فرض کار را ممکن می‌کند.</p>
+
+<div class="stmt"><div class="head">فرض ۳</div>
+درجه‌های آزادی \(T\) نماد OFDM برای اعمال این قیدها استفاده می‌شود:
+\[
+\sum_{t=1}^{T}\gamma_t^{[m]}=0,\qquad \sum_{t=1}^{T}\gamma_t^{[m]\hr}\gamma_t^{[m]}=1\ \ \forall m,\qquad \sum_{t=1}^{T}\gamma_t^{[m_1]\hr}\gamma_t^{[m_2]}=0\ \ \forall m_1\ne m_2.
+\]
+</div>
+<p><strong>معنی هر قید:</strong> دنباله‌ی \((\gamma_1,\dots,\gamma_T)\) هر RIS را یک «کد» در نظر بگیرید.</p>
+<ul>
+  <li>\(\sum_t\gamma_t=0\): کد هر RIS بر دنباله‌ی ثابت \((1,1,\dots,1)\) عمود است. مسیر LOS در طول زمان تغییر نمی‌کند، پس مثل همین دنباله‌ی ثابت است. در نتیجه سهم RIS از سهم LOS جداشدنی است.</li>
+  <li>\(\sum_t|\gamma_t|^2=1\): نرمال‌سازی انرژی.</li>
+  <li>\(\sum_t\gamma_t^{[m_1]*}\gamma_t^{[m_2]}=0\): کدهای RISهای مختلف بر هم عمودند.</li>
+</ul>
+<div class="box example"><span class="label">مثال: ستون‌های DFT با \(T=4\)</span>
+<p>ستون‌های ماتریس DFT ‏\(4\times4\) (با ضریب \(1/2\)): \(\tfrac12(1,1,1,1)\)، \(\tfrac12(1,j,-1,-j)\)، \(\tfrac12(1,-1,1,-1)\)، \(\tfrac12(1,-j,-1,j)\). ستون اول را (عملاً) LOS اشغال می‌کند. به RIS اول ستون دوم و به RIS دوم ستون سوم را می‌دهیم: جمع درایه‌های هر کدام صفر است، انرژی هر کدام \(4\times\tfrac14=1\) است و ضرب داخلی‌شان \(\tfrac14(1-j-1+j)=0\) است. هر سه قید برقرار است.</p>
+</div>
+<div class="box proof"><span class="label">چرا FIM بلوک‌قطری می‌شود؟</span>
+<p>یک درایه‌ی FIM بین پارامتری از LOS و پارامتری از RIS شماره‌ی \(m\) را با (14) بنویسید. مشتق سهم LOS به \(t\) وابسته نیست و مشتق سهم RIS ضریب \(\gamma_t^{[m]}\) دارد. پس جمع روی \(t\) ضریب \(\sum_t\gamma_t^{[m]}=0\) می‌گیرد و این درایه صفر می‌شود. به همین ترتیب درایه‌های بین RISهای مختلف ضریب \(\sum_t\gamma_t^{[m_1]*}\gamma_t^{[m_2]}=0\) دارند. پس:</p>
+\[
+\mathbf J_{\mathbf y;\bm\eta}=\diag\!\big[\mathbf J_{\mathbf y;\bm\eta^{[0]}},\mathbf J_{\mathbf y;\bm\eta^{[1]}},\dots,\mathbf J_{\mathbf y;\bm\eta^{[M_1]}}\big],
+\qquad
+\mathbf J^e_{\mathbf y;\bm\eta_1}=\diag\!\big[\mathbf J^e_{\mathbf y;\bm\eta_1^{[0]}},\dots,\mathbf J^e_{\mathbf y;\bm\eta_1^{[M_1]}}\big].
+\]
+<p>(به شرطی که اطلاعات پیشین هم بین مسیرها مستقل باشد که مقاله فرض می‌کند.) ماتریس بلوک‌قطری معین مثبت است اگر و فقط اگر هر بلوک معین مثبت باشد. پس تخمین‌پذیری را می‌شود <strong>مسیر به مسیر</strong> بررسی کرد.</p>
+</div>
+
+<div class="stmt"><div class="head">فرض ۴</div>
+همزمانی کامل (خطای ساعت صفر) و ارسال باریک‌باند (\(\lambda_n=\lambda\) برای همه‌ی \(n\)). افت مسیر روی همه‌ی المان‌های یک RIS ثابت فرض می‌شود (\(\rho^{[m]}_{\mathbf r_r}=\rho^{[m]}_{\mathbf r_R}\)) و افت مسیر و توان نویز در یک «توان نویز ترکیبی» \((\sigma^{[m]})^2\) ادغام می‌شوند. SNR برابر \(P/(\sigma^{[m]})^2\) با \(P=P_{o,b}G_RG_U\).
+</div>
+<p>همزمانی کامل در ادبیات رایج است و با روش‌های رفت‌وبرگشتی (two-way) قابل تأمین است. فرض باریک‌باند یعنی طول موج همه‌ی زیرحامل‌ها تقریباً یکی است، که برای پاسخ آرایه درست است وقتی \(B\ll f_c\).</p>
+
+<p><strong>تخمین‌پذیری مسیر LOS:</strong> مقاله اشاره می‌کند که EFIM پارامترهای هندسی LOS همیشه شرط تعریف ۳ را برقرار می‌کند. مسئله‌ی جالب، مسیرهای RIS است.</p>
+
+<!-- ============================ 12 ============================ -->
+<h2 class="page-break"><span class="num">۱۲</span>قلب مقاله: آیا خطای جهت RIS قابل تخمین است؟</h2>
+
+<p>چون همه‌ی مسیرهای RIS ساختار یکسانی دارند، کافی است یک مسیر \(m\) را تحلیل کنیم (اندیس \([m]\) را حذف می‌کنیم).</p>
+
+<div class="stmt"><div class="head">لم ۳ (میدان دور)</div>
+در میدان دور، بردار پارامترهای هندسی کانال در UE تخمین‌پذیر نیست، مگر اینکه درباره‌ی جهت‌گیری RIS یا درباره‌ی بهره‌ی مختلط مسیر اطلاعات پیشین داشته باشیم.
+</div>
+<div class="stmt"><div class="head">لم ۴ (میدان نزدیک)</div>
+در میدان نزدیک، بردار پارامترهای هندسی کانال در UE تخمین‌پذیر نیست اگر اطلاعات پیشین درباره‌ی بهره‌ی مختلط و جهت‌گیری RIS نباشد <strong>و</strong> \(N_U\lt2\). اگر \(N_U\gt1\)، امکان تخمین وجود دارد.
+</div>
+<div class="stmt"><div class="head">قضیه‌ی ۱</div>
+در میدان دور، تخمین و اصلاح خطای جهت‌گیری RIS از روی سیگنال دریافتی UE بدون اطلاعات پیشین درباره‌ی بهره‌ی مختلط کانال ممکن نیست. در میدان نزدیک، نبود این اطلاعات پیشین مانع اصلاح نیست، به شرط \(N_U\gt1\).
+</div>
+
+<h3>۱۲-۱ مثال اسباب‌بازی برای فهم ایده</h3>
+<div class="box example"><span class="label">ساده‌ترین حالت ممکن</span>
+<p>فرض کنید سیگنال \(y=\beta\,e^{j\psi(\Phi)}+n\) باشد که \(\Phi\) جهت‌گیری و \(\beta\) ضریب مختلط مجهول است. هر مقدار \(\Phi\) را در نظر بگیرید؛ با انتخاب \(\beta'=\beta e^{j(\psi(\Phi)-\psi(\Phi'))}\) سیگنال \(\beta'e^{j\psi(\Phi')}\) دقیقاً همان سیگنال قبلی است. پس داده هیچ راهی برای تشخیص \(\Phi\) از \(\Phi'\) ندارد. با زبان FIM:</p>
+\[
+\frac{\partial\mu}{\partial\Phi}=j\psi'(\Phi)\,\mu=j\psi'\beta\cdot\frac{\partial\mu}{\partial\beta_R}=\big(-\psi'\beta_I\big)\frac{\partial\mu}{\partial\beta_R}+\big(\psi'\beta_R\big)\frac{\partial\mu}{\partial\beta_I},
+\]
+<p>یعنی بردار حساسیت \(\Phi\) ترکیب خطی حقیقی بردارهای حساسیت \(\beta_R,\beta_I\) است و طبق شهود هندسی بخش ۱۰، \(J^e_\Phi=0\).</p>
+</div>
+
+<h3>۱۲-۲ مدل ساده‌شده برای اثبات</h3>
+<p>با فرض‌های ۳ و ۴ و (بدون از دست دادن کلیت در منطق) \(N_B=1,N_D=1\) (پیوست E، معادله‌ی 32)، سیگنال مسیر RIS روی آنتن \(u\):</p>
+\[
+\mu_{t,u}[n]=\gamma_t\,\beta\;\underbrace{\mathbf a^{\tp}(\mathbf u_u)\,\bm\Gamma\,\mathbf a(\mathbf b_b)}_{s_u(\bm\Phi_R)}\;e^{j2\pi f_n\tau_{\mathbf b_b\mathbf p_D}}x_d[n],
+\]
+<p>با \(\mathbf a(\mathbf u_u)=[e^{-j2\pi f_c\tau_{\mathbf r_1\mathbf u_u}},\dots,e^{-j2\pi f_c\tau_{\mathbf r_{N_R}\mathbf u_u}}]^{\tp}\) و \(\mathbf a(\mathbf b_b)\) مشابه. مکان المان‌ها \(\mathbf p_r=\mathbf p_R+\mathbf Q_R(\bm\Phi_R)\tilde{\mathbf s}_r\) است، پس هر دو بردار به \(\bm\Phi_R\) وابسته‌اند. کل وابستگی سیگنال به \(\bm\Phi_R\) و \(\beta\) در حاصل‌ضرب \(\beta\,s_u(\bm\Phi_R)\) خلاصه شده است. با تعریف \(c_{t,n}=\gamma_te^{j2\pi f_n\tau}x_d[n]\):</p>
+\[
+\frac{\partial\mu_{t,u}[n]}{\partial\beta_R}=c_{t,n}\,s_u,\qquad
+\frac{\partial\mu_{t,u}[n]}{\partial\beta_I}=j\,c_{t,n}\,s_u,\qquad
+\frac{\partial\mu_{t,u}[n]}{\partial\Phi_k}=c_{t,n}\,\beta\,\frac{\partial s_u}{\partial\Phi_k}.
+\]
+<p>پرسش اصلی این است: <strong>آیا بردار \(\big[\partial s_u/\partial\Phi_k\big]_{u=1}^{N_U}\) با یک ضریب مختلط مضربی از بردار \(\big[s_u\big]_{u=1}^{N_U}\) است؟</strong> اگر بله، طبق مثال ۱۲-۱ اطلاعات \(\Phi_k\) صفر است.</p>
+
+<h3>۱۲-۳ اثبات لم ۳ (میدان دور، پیوست D)</h3>
+<div class="box proof long"><span class="label">اثبات</span>
+<p>در میدان دور (بخش ۶)، فاز هر المان-آنتن به جمع دو بخش جدا می‌شود: بخشی که فقط به آنتن \(u\) بستگی دارد و بخشی که فقط به المان \(r\). پس</p>
+\[
+s_u(\bm\Phi_R)=\underbrace{[\mathbf a_{UR}]_u}_{\text{(i)}}\cdot\underbrace{\mathbf a^{\hr}_{RU}(\bm\Phi_R)\,\bm\Gamma\,\mathbf a_{RB}(\bm\Phi_R)}_{\text{(ii)}\ \sigma(\bm\Phi_R)}.
+\]
+<p>عامل (i) فقط به آنتن \(u\) بستگی دارد و عامل (ii) یعنی \(\sigma(\bm\Phi_R)\) برای همه‌ی آنتن‌ها مشترک است. (وقتی زوایا \(\bm\Delta\) به‌عنوان پارامترهای جداگانه در نظر گرفته شوند، \(\mathbf a_{UR}\) که پاسخ آرایه‌ی UE است به \(\bm\Phi_R\) وابسته نیست؛ چرخش RIS فقط مکان المان‌های RIS را در \(\mathbf a_{RU}\) و \(\mathbf a_{RB}\) عوض می‌کند. این همان «رها کردن پارامتردهی بردار یکه» در پیوست D است.) بنابراین:</p>
+\[
+\frac{\partial s_u}{\partial\Phi_k}=[\mathbf a_{UR}]_u\,\frac{\partial\sigma}{\partial\Phi_k}=\underbrace{\frac{1}{\sigma}\frac{\partial\sigma}{\partial\Phi_k}}_{\kappa_k\ \in\ \mathbb C}\cdot s_u\qquad\forall u .
+\]
+<p>یعنی بردار مشتق دقیقاً \(\kappa_k\) برابر بردار \(\mathbf s\) است، با یک عدد مختلط مشترک. پس:</p>
+\[
+\frac{\partial\bm\mu}{\partial\Phi_k}=\beta\kappa_k\frac{\partial\bm\mu}{\partial\beta_R}=\Rl\{\beta\kappa_k\}\frac{\partial\bm\mu}{\partial\beta_R}+\Im\{\beta\kappa_k\}\frac{\partial\bm\mu}{\partial\beta_I}.
+\]
+<p>بردار حساسیت هر زاویه‌ی جهت‌گیری، در فضای حقیقی پوشیده‌شده توسط بردارهای حساسیت \(\beta_R,\beta_I\) است. نتیجه: بدون پیشین (\(\Xi^{\bm\Phi_R}=0\)، \(\Xi^{\beta}=0\))، EFIM پارامتر \(\tilde{\bm\eta}=[\bm\Phi_R,\beta]\) برای جهت‌گیری صفر است، <strong>برای هر \(N_U\)</strong>.</p>
+<p><strong>همین را مقاله با ماتریس‌ها نشان می‌دهد.</strong> مشتق‌ها (معادله‌های 27 تا 29):</p>
+\[
+\begin{aligned}
+\nabla_{\bm\Phi_R}\bm\mu_t[n]= & \;\frac{j2\pi}{\lambda}\gamma_t\beta\,\mathbf a_{UR}\mathbf a^{\hr}_{RU}\mathbf K_{RU}\bm\Gamma\mathbf a_{RB}\mathbf a^{\hr}_{BR}\mathbf F\mathbf x\,e^{-j2\pi f_c(\cdot)}\\
+& -\frac{j2\pi}{\lambda}\gamma_t\beta\,\mathbf a_{UR}\mathbf a^{\hr}_{RU}\bm\Gamma\mathbf K_{RB}\mathbf a_{RB}\mathbf a^{\hr}_{BR}\mathbf F\mathbf x\,e^{-j2\pi f_c(\cdot)},\\
+\nabla_{\beta_R}\bm\mu_t[n]= & \;\gamma_t\,\mathbf a_{UR}\mathbf a^{\hr}_{RU}\bm\Gamma\mathbf a_{RB}\mathbf a^{\hr}_{BR}\mathbf F\mathbf x\,e^{-j2\pi f_c(\cdot)},\qquad
+\nabla_{\beta_I}\bm\mu_t[n]=j\nabla_{\beta_R}\bm\mu_t[n],
+\end{aligned}
+\]
+<p>با \(\mathbf K_{RU}=\diag[\bm\Delta^{\tp}_{\mathbf r_R\mathbf u_U}(\nabla_{\bm\Phi_R}\mathbf Q_R\tilde{\mathbf S}_r)]\): مشتق فاز هر المان نسبت به چرخش. هر دو مشتق با بردار مشترک \(\mathbf a_{UR}\) شروع می‌شوند و بقیه‌ی عبارت عدد اسکالر است؛ این همان تناسبی است که در بالا دیدیم. با جایگذاری در (14) ساختار FIM:</p>
+\[
+\mathbf J_{\mathbf y|\tilde{\bm\eta}}=\begin{bmatrix}\mathbf J_{\mathbf y|\bm\Phi_R} & \mathbf J_{\mathbf y|\bm\Phi_R,\beta_R} & \mathbf J_{\mathbf y|\bm\Phi_R,\beta_I}\\ \mathbf J^{\tp}_{\mathbf y|\bm\Phi_R,\beta_R} & J_{\mathbf y|\beta_R} & 0\\ \mathbf J^{\tp}_{\mathbf y|\bm\Phi_R,\beta_I} & 0 & J_{\mathbf y|\beta_I}\end{bmatrix},
+\]
+<p>درایه‌ی بین \(\beta_R\) و \(\beta_I\) صفر است، چون \(\Rl\{(\mathbf g)^{\hr}(j\mathbf g)\}=\Rl\{j\|\mathbf g\|^2\}=0\)، و همچنین \(J_{\beta_R}=J_{\beta_I}\). EFIM با پیشین‌های \(\Xi\) برابر است با</p>
+\[
+\mathbf J^{e}_{\mathbf y;\tilde{\bm\eta}}=\mathbf J_{\mathbf y|\bm\Phi_R}+\Xi^{\bm\Phi_R}_{\bm\Phi_R,\bm\Phi_R}-\big[J_{\mathbf y|\beta_R}+\Xi^{\beta_R}_{\beta_R,\beta_R}\big]^{-1}\big[\mathbf J_{\mathbf y|\bm\Phi_R,\beta_R}\mathbf J^{\tp}_{\mathbf y|\bm\Phi_R,\beta_R}+\mathbf J_{\mathbf y|\bm\Phi_R,\beta_I}\mathbf J^{\tp}_{\mathbf y|\bm\Phi_R,\beta_I}\big].\tag{30}
+\]
+<p>به خاطر تناسب بالا (با \(\mathbf g_k=\Rl\{\beta\kappa_k\}\mathbf g_R+\Im\{\beta\kappa_k\}\mathbf g_I\) و \(\mathbf g_R\perp\mathbf g_I\)، \(\|\mathbf g_R\|=\|\mathbf g_I\|\)) داریم</p>
+\[
+\mathbf J_{\mathbf y|\bm\Phi_R,\beta_R}\mathbf J^{\tp}_{\mathbf y|\bm\Phi_R,\beta_R}+\mathbf J_{\mathbf y|\bm\Phi_R,\beta_I}\mathbf J^{\tp}_{\mathbf y|\bm\Phi_R,\beta_I}=J_{\mathbf y|\beta_R}\,\mathbf J_{\mathbf y|\bm\Phi_R},
+\]
+<p>که همان «معادله‌ی دوم» زیر (31) در مقاله است. پس وقتی هر دو پیشین صفرند:</p>
+\[
+\mathbf J^{e}_{\mathbf y;\tilde{\bm\eta}}=\mathbf J_{\mathbf y|\bm\Phi_R}-J^{-1}_{\mathbf y|\beta_R}J_{\mathbf y|\beta_R}\mathbf J_{\mathbf y|\bm\Phi_R}=\mathbf 0.\tag{31}
+\]
+<p>با گزاره‌ی ۵، کل بردار هندسی مسیر RIS تخمین‌پذیر نیست. ∎</p>
+</div>
+
+<h3>۱۲-۴ اثبات لم ۴ (میدان نزدیک، پیوست E)</h3>
+<div class="box proof long"><span class="label">اثبات</span>
+<p>در میدان نزدیک فاصله‌ی دقیق \(d_{\mathbf r_r\mathbf u_u}=\|\mathbf p_u-\mathbf p_R-\mathbf Q_R\tilde{\mathbf s}_r\|\) استفاده می‌شود و فاز المان \(r\) روی آنتن \(u\) به هیچ وجه به صورت «تابع \(r\) + تابع \(u\)» جدا نمی‌شود. پس</p>
+\[
+s_u(\bm\Phi_R)=\sum_{r=1}^{N_R}e^{j\vartheta_r}\,e^{-j\frac{2\pi}{\lambda}\left(d_{\mathbf b\mathbf r_r}(\bm\Phi_R)+d_{\mathbf r_r\mathbf u_u}(\bm\Phi_R)\right)},
+\qquad
+\frac{\partial d_{\mathbf r_r\mathbf u_u}}{\partial\Phi_k}=-\,\mathbf a^{\tp}_{\mathbf r_r\mathbf u_u}\,\frac{\partial\mathbf Q_R}{\partial\Phi_k}\tilde{\mathbf s}_r,
+\]
+<p>که \(\mathbf a_{\mathbf r_r\mathbf u_u}\) بردار یکه از المان \(r\) به آنتن \(u\) است و در میدان نزدیک برای هر جفت \((r,u)\) متفاوت است. پس \(\partial s_u/\partial\Phi_k\) برای هر آنتن، مجموع وزن‌دار متفاوتی است.</p>
+<ul>
+  <li><strong>\(N_U=1\):</strong> فقط یک عدد مختلط \(s_1\) داریم. هر عدد مختلط \(\partial s_1/\partial\Phi_k\) را می‌توان به صورت \(\kappa_k s_1\) نوشت (با \(\kappa_k=(\partial s_1/\partial\Phi_k)/s_1\)). همان استدلال لم ۳ برقرار است و \(\mathbf J^e=\mathbf 0\).</li>
+  <li><strong>\(N_U\gt1\):</strong> باید بردار \([\partial s_u/\partial\Phi_k]_u\) با <em>یک</em> ضریب مختلط مشترک مضرب \([s_u]_u\) باشد، که در میدان نزدیک به طور کلی برقرار نیست (نسبت \((\partial s_u/\partial\Phi_k)/s_u\) برای آنتن‌های مختلف فرق می‌کند). پس بخشی از بردار حساسیت عمود بر فضای \(\beta\) باقی می‌ماند و \(\mathbf J^e\gt0\).</li>
+</ul>
+<p>مقاله همین را با فرم ماتریسی نشان می‌دهد. با تعریف \(\mathbf K(\mathbf g_g)=\diag[\nabla_{\bm\Phi_R}\tau_{\mathbf r_1\mathbf g_g},\dots,\nabla_{\bm\Phi_R}\tau_{\mathbf r_{N_R}\mathbf g_g}]\) درایه‌های FIM:</p>
+\[
+\begin{aligned}
+\mathbf J_{\mathbf y|\bm\Phi_R}= & \;\frac{2}{N_0}(2\pi f_c)^2\sum_{n=1}^{N}|x_d[n]|^2|\beta|^2\\
+& \times\sum_{u=1}^{N_U}\Rl\Big\{\mathbf a^{\hr}(\mathbf b_b)\big[\bm\Gamma^{\hr}\mathbf K^*(\mathbf u_u)+\mathbf K^{\hr}(\mathbf b_b)\bm\Gamma^{\hr}\big]\mathbf a(\mathbf u_u)\mathbf a^{\tp}(\mathbf u_u)\big[\mathbf K^{\tp}(\mathbf u_u)\bm\Gamma+\bm\Gamma\mathbf K(\mathbf b_b)\big]\mathbf a(\mathbf b_b)\Big\},
+\end{aligned}\tag{34}
+\]
+\[
+J_{\mathbf y|\beta_R}=J_{\mathbf y|\beta_I}=\frac{2}{N_0}\sum_{n=1}^{N}|x_d[n]|^2\sum_{u=1}^{N_U}\big|\mathbf a^{\tp}(\mathbf u_u)\bm\Gamma\mathbf a(\mathbf b_b)\big|^2 ,\tag{37}
+\]
+<p>و (35)، (36) جمله‌های متقابل. EFIM همان شکل (38) را دارد:</p>
+\[
+\mathbf J^{e}_{\mathbf y;\tilde{\bm\eta}}=\mathbf J_{\mathbf y|\bm\Phi_R}+\Xi^{\bm\Phi_R}_{\bm\Phi_R,\bm\Phi_R}-\big[J_{\mathbf y|\beta_R}+\Xi^{\beta_R}_{\beta_R,\beta_R}\big]^{-1}\big[\mathbf J_{\mathbf y|\bm\Phi_R,\beta_R}\mathbf J^{\tp}_{\mathbf y|\bm\Phi_R,\beta_R}+\mathbf J_{\mathbf y|\bm\Phi_R,\beta_I}\mathbf J^{\tp}_{\mathbf y|\bm\Phi_R,\beta_I}\big].\tag{38}
+\]
+<p>با \(N_U=1\) جمع روی \(u\) یک جمله دارد و جمله‌ی کسرشده دقیقاً برابر \(\mathbf J_{\mathbf y|\bm\Phi_R}\) می‌شود (EFIM صفر). با \(N_U\gt1\) نامساوی کوشی-شوارتز بین جمع‌ها اکید می‌شود و EFIM مثبت می‌ماند. ∎</p>
+</div>
+
+<div class="box intuition"><span class="label">شهود فیزیکی قضیه‌ی ۱</span>
+<p><strong>میدان دور:</strong> همه‌ی آنتن‌های UE موج تختی می‌بینند که از جهت RIS آمده. چرخش RIS فقط دامنه و فاز «کل» این موج را عوض می‌کند، مثل این که صدای یک بلندگو را کمی بلندتر یا با تأخیر فاز پخش کنیم. هر تعداد میکروفون که داشته باشیم، نمی‌توانیم بفهمیم این تغییر از چرخش بلندگو بوده یا از ضریب نامعلوم مسیر.</p>
+<p><strong>میدان نزدیک:</strong> RIS آن‌قدر نزدیک است که هر آنتن UE آن را از زاویه‌ی کمی متفاوت می‌بیند. چرخش RIS برای هر آنتن، تغییر فاز و دامنه‌ی متفاوتی ایجاد می‌کند. این الگوی متفاوت را دیگر نمی‌توان با یک ضریب مشترک توضیح داد. ولی با یک آنتن، این «تفاوت بین آنتن‌ها» وجود ندارد.</p>
+</div>
+
+<div class="stmt"><div class="head">ملاحظه‌ی ۴</div>
+بهره‌ی مختلط مسیر را می‌توان با SNR نرمال کرد؛ آنگاه از یک بهره‌ی مختلط مجهول به یک <strong>فاز مجهول</strong> تقلیل می‌یابد. پس لم‌ها و قضیه را می‌توان فقط برحسب اطلاعات پیشین درباره‌ی فاز مجهول بیان کرد. چون داشتن اطلاعات پیشین درباره‌ی یک فاز تصادفی عملاً ناممکن است، قضیه‌ی ۱ عملاً می‌گوید: <strong>امکان تخمین و اصلاح خطای جهت‌گیری RIS فقط در میدان نزدیک وجود دارد.</strong>
+</div>
+
+<!-- ============================ 13 ============================ -->
+<h2 class="page-break"><span class="num">۱۳</span>از پارامترهای کانال تا مکان کاربر</h2>
+
+<p>تا اینجا FIM برای پارامترهای کانال (زوایا، تأخیرها، ...) بود. ولی هدف نهایی <strong>مکان و جهت UE</strong> است: \(\bm\kappa_0=[\mathbf p_U^{\tp},\bm\Phi_U^{\tp}]^{\tp}\) (شش پارامتر: سه مختصات، سه زاویه). این بخش فقط حالت‌هایی را بررسی می‌کند که پارامترهای هندسی کانال تخمین‌پذیرند.</p>
+
+<h3>۱۳-۱ تبدیل اطلاعات فیشر با قاعده‌ی زنجیره‌ای</h3>
+<p>پارامترهای کانال توابعی از مکان‌ها هستند: \(\bm\eta_1=\mathbf h(\bm\kappa)\). مثلاً تأخیر \(\tau=\|\mathbf p_U-\mathbf p_R\|/c\). با قاعده‌ی زنجیره‌ای \(\nabla_{\bm\kappa}\ln f=\bm\Upsilon\nabla_{\bm\eta}\ln f\) که \([\bm\Upsilon]_{ij}=\partial\eta_j/\partial\kappa_i\). جایگذاری در تعریف FIM:</p>
+\[
+\mathbf J_{\mathbf y|\bm\kappa}=\Ex\big[\bm\Upsilon\nabla_{\bm\eta}\ln f\,(\nabla_{\bm\eta}\ln f)^{\tp}\bm\Upsilon^{\tp}\big]=\bm\Upsilon_{\bm\kappa}\,\mathbf J^{e}_{\mathbf y|\bm\eta_1}\,\bm\Upsilon_{\bm\kappa}^{\tp}.
+\]
+<p>(پانویس مقاله: این تبدیل روی EFIM پارامترهای کانال اعمال می‌شود، یعنی بعد از کسر اطلاعات مصرف‌شده برای پارامترهای مزاحم.)</p>
+
+<h3>۱۳-۲ درایه‌های ماتریس تبدیل (پیوست F)</h3>
+<p>برای پارامتر \(\nu\) که یک مکان (\(\mathbf p\)) یا جابه‌جایی (\(\bm\xi\)) است:</p>
+\[
+\nabla_\nu\tau_{GV}=\frac{\nabla_\nu d_{GV}}{c},\qquad
+\nabla_{\mathbf p_V}d_{GV}=\nabla_{\bm\xi_V}d_{GV}=\frac{\mathbf p_V-\mathbf p_G}{d_{GV}},\qquad
+\nabla_{\mathbf p_G}d_{GV}=\nabla_{\bm\xi_G}d_{GV}=-\frac{\mathbf p_V-\mathbf p_G}{d_{GV}}.
+\]
+<p>(مقاله با \(\mathbf p_G\) در مبدأ این را \(\mathbf p_V/d_{GV}\) می‌نویسد.) یعنی گرادیان فاصله بردار یکه‌ی جهت است: حرکت در امتداد خط واصل، فاصله را بیشترین تغییر می‌دهد.</p>
+<p>زاویه‌ی ارتفاع: \(\theta=\arccos\big((z_V-z_G)/d\big)\). با \((\arccos x)'=-1/\sqrt{1-x^2}=-1/\sin\theta\) و قاعده‌ی خارج‌قسمت:</p>
+\[
+\nabla_\nu\theta_{GV}=-\sqrt{\frac{1}{\sin^2\theta_{GV}}}\Big[d^{-1}_{GV}\nabla_\nu(z_V-z_G)-(z_V-z_G)\,d^{-2}_{GV}\nabla_\nu d_{GV}\Big].
+\]
+<p>زاویه‌ی سمت: \(\phi=\arctan\big((y_V-y_G)/(x_V-x_G)\big)\). با \((\arctan x)'=1/(1+x^2)=\cos^2\phi\):</p>
+\[
+\nabla_\nu\phi_{GV}=\cos^2\phi_{GV}\Big[(x_V-x_G)^{-1}\nabla_\nu(y_V-y_G)-(x_V-x_G)^{-2}(y_V-y_G)\nabla_\nu(x_V-x_G)\Big].
+\]
+
+<h3>۱۳-۳ دو روش برای مدل‌کردن عدم قطعیت RIS</h3>
+<table>
+<tr><th>روش</th><th>پارامتر مکانی RIS شماره‌ی \(m\)</th><th>بردار کل</th></tr>
+<tr><td>روش ۱ (بخش IV-A)</td><td>مکان و جهت: \(\bm\kappa^{[m]}=[\mathbf p_R^{[m]\tp},\bm\Phi_R^{[m]\tp}]^{\tp}\)</td><td>\(\bm\kappa=[\bm\kappa_0^{\tp},\bm\kappa^{[1]\tp},\dots,\bm\kappa^{[M_1]\tp}]^{\tp}\)</td></tr>
+<tr><td>روش ۲ (بخش IV-B)</td><td>جابه‌جایی و جهت: \(\bm\zeta^{[m]}=[\bm\xi_R^{[m]\tp},\bm\Phi_R^{[m]\tp}]^{\tp}\)</td><td>\(\bm\zeta=[\bm\kappa_0^{\tp},\bm\zeta^{[1]\tp},\dots,\bm\zeta^{[M_1]\tp}]^{\tp}\)</td></tr>
+</table>
+<p>در هر دو، پارامتر مورد علاقه فقط \(\bm\kappa_0\) (مکان UE) است و پارامترهای RIS مزاحم‌اند.</p>
+
+<h3>۱۳-۴ اطلاعات پیشین مکانی: معادله‌های (15) و (16)</h3>
+<p>با فرض استقلال پارامترهای مکانی RISهای مختلف:</p>
+\[
+\chi(\bm\kappa)=\chi(\bm\kappa_0)\prod_{m=1}^{M_1}\chi\big(\mathbf p_R^{[m]}\,\big|\,\bm\kappa_0\big)\,\chi\big(\bm\Phi_R^{[m]}\,\big|\,\mathbf p_R^{[m]},\mathbf p_U\big).\tag{15}
+\]
+<p>FIM پیشین ساختار «پیکانی» (arrowhead) دارد: سطر و ستون اول (UE) با همه‌ی RISها جفت می‌شود، ولی RISها با هم جفت نمی‌شوند:</p>
+\[
+\mathbf J_{\bm\kappa}=\begin{bmatrix}
+\tilde\Xi_{\bm\kappa_0,\bm\kappa_0} & \tilde\Xi_{\bm\kappa_0,\bm\kappa^{[1]}} & \cdots & \tilde\Xi_{\bm\kappa_0,\bm\kappa^{[M_1]}}\\
+\tilde\Xi^{\tp}_{\bm\kappa_0,\bm\kappa^{[1]}} & \tilde\Xi_{\bm\kappa^{[1]},\bm\kappa^{[1]}} & & \mathbf 0\\
+\vdots & & \ddots & \\
+\tilde\Xi^{\tp}_{\bm\kappa_0,\bm\kappa^{[M_1]}} & \mathbf 0 & & \tilde\Xi_{\bm\kappa^{[M_1]},\bm\kappa^{[M_1]}}
+\end{bmatrix}\tag{16}
+\]
+<p>که \(\tilde\Xi_{\bm\kappa_0,\bm\kappa_0}=\Xi_{\bm\kappa_0,\bm\kappa_0}+\sum_m[\Xi^{\mathbf p_R^{[m]}}_{\bm\kappa_0,\bm\kappa_0}+\Xi^{\bm\Phi_R^{[m]}}_{\bm\kappa_0,\bm\kappa_0}]\) و بقیه به همین ترتیب از مشتق‌های لگاریتم توزیع‌های شرطی (15) به دست می‌آیند. FIM عمومی: \(\mathbf J_{\mathbf y;\bm\kappa}=\mathbf J_{\mathbf y|\bm\kappa}+\mathbf J_{\bm\kappa}\).</p>
+
+<h3>۱۳-۵ لم ۵ و ۶: EFIM مکان UE، معادله‌های (17) و (18)</h3>
+<p>ماتریس تبدیل به زیرماتریس‌ها تقسیم می‌شود: \(\overline{\bm\Upsilon}^{[0]}_{\bm\kappa}\) پارامترهای LOS را به مکان UE مربوط می‌کند، \(\overline{\bm\Upsilon}^{[m]}_{\bm\kappa}\) پارامترهای مسیر RIS را به مکان UE، و \(\overline{\overline{\bm\Upsilon}}{}^{[m]}_{\bm\kappa}\) پارامترهای مسیر RIS را به مکان خود RIS. برای خوانایی، برای هر مسیر \(m\) تعریف کنید:</p>
+\[
+\mathbf A_m=\overline{\bm\Upsilon}^{[m]}_{\bm\kappa}\mathbf J^e_{\mathbf y|\bm\eta_1^{[m]}}\overline{\bm\Upsilon}^{[m]\tp}_{\bm\kappa},\quad
+\mathbf B_m=\overline{\bm\Upsilon}^{[m]}_{\bm\kappa}\mathbf J^e_{\mathbf y|\bm\eta_1^{[m]}}\overline{\overline{\bm\Upsilon}}{}^{[m]\tp}_{\bm\kappa}+\tilde\Xi_{\bm\kappa_0,\bm\kappa^{[m]}},\quad
+\mathbf C_m=\overline{\overline{\bm\Upsilon}}{}^{[m]}_{\bm\kappa}\mathbf J^e_{\mathbf y|\bm\eta_1^{[m]}}\overline{\overline{\bm\Upsilon}}{}^{[m]\tp}_{\bm\kappa}+\tilde\Xi_{\bm\kappa^{[m]},\bm\kappa^{[m]}}.
+\]
+<p>آنگاه لم ۵ (معادله‌ی 17) به این شکل خوانا درمی‌آید:</p>
+\[
+\mathbf J^e_{\mathbf y;\bm\kappa_1}=\underbrace{\sum_{m=0}^{M_1}\mathbf A_m}_{\text{(i)}}+\underbrace{\tilde\Xi_{\bm\kappa_0,\bm\kappa_0}}_{\text{(ii)}}-\underbrace{\sum_{m=1}^{M_1}\mathbf B_m\mathbf C_m^{-1}\mathbf B_m^{\tp}}_{\text{(iii)}}.\tag{17}
+\]
+<ul>
+  <li>(i): مجموع اطلاعاتی که همه‌ی مسیرها (LOS و RISها) درباره‌ی مکان UE می‌دهند.</li>
+  <li>(ii): اطلاعات پیشین درباره‌ی خود UE.</li>
+  <li>(iii): هزینه‌ی مجهول بودن مکان و جهت RISها؛ بخشی از اطلاعات هر مسیر RIS که صرف تخمین مکان خود آن RIS می‌شود.</li>
+</ul>
+<div class="box proof"><span class="label">چرا این شکل؟</span>
+<p>FIM کل برای \(\bm\kappa\) (بعد از تبدیل و افزودن پیشین) همان ساختار پیکانی (16) را دارد: بلوک UE-UE برابر \(\sum_m\mathbf A_m+\tilde\Xi_{\bm\kappa_0\bm\kappa_0}\)، بلوک‌های UE-RIS برابر \(\mathbf B_m\)، بلوک‌های RIS-RIS قطری \(\mathbf C_m\) و بلوک‌های RIS-RIS متقاطع صفر (چون فرض ۳ مسیرها را جدا کرده و پیشین‌ها مستقل‌اند). مکمل شور (تعریف ۲) نسبت به بلوک RISها یعنی \(\mathbf B\,\diag(\mathbf C_1,\dots)^{-1}\mathbf B^{\tp}\)، و چون این بلوک قطری است، وارونش قطری است و حاصل به جمع \(\sum_m\mathbf B_m\mathbf C_m^{-1}\mathbf B_m^{\tp}\) تبدیل می‌شود.</p>
+</div>
+<p>لم ۶ (معادله‌ی 18) دقیقاً همین شکل را برای روش ۲ با \(\bm\Upsilon_{\bm\zeta}\) و \(\tilde\Xi_{\bm\zeta}\) دارد.</p>
+
+<div class="stmt"><div class="head">قضیه‌ی ۲</div>
+تفاوت \(\mathbf J^e_{\mathbf y;\bm\kappa_1}\) و \(\mathbf J^e_{\mathbf y;\bm\zeta_1}\) فقط در اطلاعات پیشین است. اگر درایه‌های غیرقطری هر دو ماتریس پیشین صفر باشند، \(\mathbf J^e_{\mathbf y;\bm\kappa_1}\succeq\mathbf J^e_{\mathbf y;\bm\zeta_1}\) اگر و فقط اگر \(\mathbf J_{\bm\kappa}\succeq\mathbf J_{\bm\zeta}\).
+</div>
+<div class="box proof"><span class="label">ایده‌ی اثبات</span>
+<p>چون \(\mathbf p_R=\tilde{\mathbf p}_R+\bm\xi_R\) و \(\tilde{\mathbf p}_R\) ثابت است، \(\partial\mathbf p_R/\partial\bm\xi_R=\mathbf I\). پس مشتق هر پارامتر کانال نسبت به \(\mathbf p_R\) و نسبت به \(\bm\xi_R\) یکی است: \(\bm\Upsilon_{\bm\kappa}=\bm\Upsilon_{\bm\zeta}\) (پیوست F). بخش مشاهده در دو روش یکسان است و تنها تفاوت در جمله‌های پیشین روی قطر است.</p>
+</div>
+
+<h3>۱۳-۶ ملاحظه‌ی ۵: RIS بدون اطلاعات پیشین هیچ کمکی نمی‌کند</h3>
+<div class="stmt"><div class="head">ملاحظه‌ی ۵ (پیوست G)</div>
+صرف‌نظر از اندازه‌ی RIS و میدان نزدیک یا دور، یک RIS فقط وقتی برای مکان‌یابی مفید است که درباره‌ی مکانش اطلاعات پیشین وجود داشته باشد.
+</div>
+<div class="box proof"><span class="label">اثبات (پیوست G)</span>
+<p>سهم RIS شماره‌ی \(m\) در (17) برابر \(\mathbf A_m-\mathbf B_m\mathbf C_m^{-1}\mathbf B_m^{\tp}\) است (معادله‌ی 39). بدون پیشین، \(\tilde\Xi_{\bm\kappa_0,\bm\kappa^{[m]}}=\mathbf 0\) و \(\tilde\Xi_{\bm\kappa^{[m]},\bm\kappa^{[m]}}=\mathbf 0\)، پس:</p>
+\[
+\mathbf A_m-\mathbf B_m\mathbf C_m^{-1}\mathbf B_m^{\tp}
+=\overline{\bm\Upsilon}\mathbf J^e\overline{\bm\Upsilon}^{\tp}-\Big[\overline{\bm\Upsilon}\mathbf J^e\overline{\overline{\bm\Upsilon}}{}^{\tp}\Big]\Big(\overline{\overline{\bm\Upsilon}}\mathbf J^e\overline{\overline{\bm\Upsilon}}{}^{\tp}\Big)^{-1}\Big[\overline{\bm\Upsilon}\mathbf J^e\overline{\overline{\bm\Upsilon}}{}^{\tp}\Big]^{\tp}.\tag{40}
+\]
+<p>مقاله نشان می‌دهد این عبارت به \(\overline{\bm\Upsilon}\mathbf J^e\overline{\bm\Upsilon}^{\tp}-\overline{\bm\Upsilon}\mathbf J^e\overline{\bm\Upsilon}^{\tp}=\mathbf 0\) کاهش می‌یابد. دلیل این است که پارامترهای مسیر RIS فقط به <em>مکان نسبی</em> UE و RIS حساس‌اند، پس اثر جابه‌جایی UE را می‌توان با جابه‌جایی مناسب RIS تقلید کرد (به زبان گرام: سطرهای \(\overline{\bm\Upsilon}\) در فضای سطرهای \(\overline{\overline{\bm\Upsilon}}\) قرار دارند و تصویر کامل است).</p>
+</div>
+<div class="box example"><span class="label">مثال یک‌بعدی</span>
+<p>فرض کنید فقط فاصله‌ی \(r=x_U-x_R\) با نویز واریانس \(\sigma^2\) اندازه‌گیری شود. FIM برای \([x_U,x_R]\):</p>
+\[
+\mathbf J=\frac{1}{\sigma^2}\begin{bmatrix}1&-1\\-1&1\end{bmatrix}+\begin{bmatrix}0&0\\0&p\end{bmatrix},
+\]
+<p>که \(p\) دقت پیشین مکان RIS است. EFIM برای \(x_U\):</p>
+\[
+J^e_{x_U}=\frac{1}{\sigma^2}-\frac{1/\sigma^4}{1/\sigma^2+p}=\frac{p}{1+p\sigma^2}=\frac{1}{\sigma^2+1/p}.
+\]
+<ul>
+  <li>\(p=0\) (مکان RIS کاملاً مجهول): \(J^e=0\). مسیر RIS هیچ اطلاعاتی درباره‌ی UE نمی‌دهد.</li>
+  <li>\(p\to\infty\) (مکان RIS دقیقاً معلوم): \(J^e=1/\sigma^2\). همه‌ی اطلاعات اندازه‌گیری به UE می‌رسد.</li>
+  <li>در حالت میانی، واریانس مؤثر برابر <strong>جمع</strong> واریانس اندازه‌گیری و واریانس مکان RIS است: \(\sigma^2+1/p\). پس دقت مکان‌یابی UE هیچ‌وقت از دقت دانسته‌ی ما درباره‌ی مکان RIS بهتر نمی‌شود.</li>
+</ul>
+</div>
+
+<h3>۱۳-۷ کران‌های PEB و OEB</h3>
+<p>با وارون EFIM مکان UE (شش‌بعدی: سه مکان، سه زاویه):</p>
+\[
+\mathrm{PEB}=\sqrt{\tr\Big(\big[(\mathbf J^e_{\mathbf y;\bm\kappa_1})^{-1}\big]_{1:3,1:3}\Big)}\ \ [\mathrm m],\qquad
+\mathrm{OEB}=\sqrt{\tr\Big(\big[(\mathbf J^e_{\mathbf y;\bm\kappa_1})^{-1}\big]_{4:6,4:6}\Big)}\ \ [\mathrm{rad}].
+\]
+<p>مقاله در متن می‌گوید «سه قطر اول جمع می‌شوند» و واحدها را متر و رادیان گزارش می‌کند؛ این همان تعریف رایج است که جذر مجموع واریانس‌هاست. برای OEB جهت‌گیری RIS در بخش ۱۴ همین کار روی EFIM پارامتر \(\bm\Phi_R\) انجام می‌شود.</p>
+
+<!-- ============================ 14 ============================ -->
+<h2 class="page-break"><span class="num">۱۴</span>نتایج عددی</h2>
+
+<h3>۱۴-۱ پیکربندی شبیه‌سازی</h3>
+<table>
+<tr><th>پارامتر</th><th>مقدار</th></tr>
+<tr><td>BS</td><td>یک آنتن، در مبدأ \([0,0,0]\)، \(\mathbf Q_B=\mathbf I\)، بدون پرتوسازی ارسالی</td></tr>
+<tr><td>RIS ۱ (چرخیده)</td><td>مرکز \([10,8,4]\) متر، جابه‌جا نشده، زوایای چرخش \(\bm\Phi_R^{[1]}=[0.1,0.2,0.1]\) رادیان</td></tr>
+<tr><td>RIS ۲ (سالم)</td><td>مرکز \([10,8.5,4]\) متر، بدون خطا</td></tr>
+<tr><td>UE</td><td>\(\mathbf p_U=[12,10,3]\) متر، \(\mathbf Q_U=\mathbf I\)</td></tr>
+<tr><td>آرایه‌ها</td><td>آرایه‌ی مستطیلی یکنواخت (URA) با بردار عمود اولیه در جهت \(z\)</td></tr>
+<tr><td>طول موج و فاصله‌ی المان</td><td>\(\lambda=3\) سانتی‌متر (حدود ۱۰ گیگاهرتز)، فاصله‌ی المان‌ها \(1.5\) سانتی‌متر \(=\lambda/2\)</td></tr>
+<tr><td>OFDM</td><td>\(N=256\) زیرحامل</td></tr>
+<tr><td>توان و نویز</td><td>توان ارسالی \(23\) dBm، چگالی نویز \(N_0=-174\) dBm/Hz، بهره‌ی آنتن‌ها \(G_B=G_U=2\) dB</td></tr>
+<tr><td>مدل افت مسیر</td><td>LOS: فضای آزاد؛ RIS: لم ۲ با \(q_0=0.285\) و \(\epsilon_p=0.5\)</td></tr>
+<tr><td>اطلاعات پیشین</td><td>هیچ پیشینی روی بهره‌های مختلط؛ پیشین جهت‌گیری به صورت کسری از SNR (\(P/\sigma^2\))</td></tr>
+</table>
+
+<div class="box example"><span class="label">بررسی شرط میدان نزدیک</span>
+<p>مقاله می‌گوید UE در میدان نزدیک RIS اول است وقتی \(N_R^{[1]}\ge100\) و در میدان نزدیک RIS دوم وقتی \(N_R^{[2]}\ge90\). این را با فاصله‌ی فراونهوفر بررسی می‌کنیم. برای آرایه‌ی مربعی \(\sqrt N\times\sqrt N\) با فاصله‌ی \(\delta=1.5\) سانتی‌متر، ضلع حدود \(\sqrt N\delta\) و قطر \(D=\sqrt{2N}\,\delta\) است، پس</p>
+\[
+d_F=\frac{2D^2}{\lambda}=\frac{4N\delta^2}{\lambda}=\frac{4N(0.015)^2}{0.03}=0.03\,N\ \text{m}.
+\]
+<ul>
+  <li>فاصله‌ی UE تا RIS ۱: \(\|[12,10,3]-[10,8,4]\|=\|[2,2,-1]\|=3\) متر. شرط \(0.03N\ge3\) یعنی \(N\ge100\). ✓</li>
+  <li>فاصله‌ی UE تا RIS ۲: \(\|[2,1.5,-1]\|=\sqrt{7.25}\approx2.69\) متر. شرط \(0.03N\ge2.69\) یعنی \(N\gtrsim90\). ✓</li>
+</ul>
+<p>پس RISهای ۱۲۱ و ۴۸۴ المانی (\(11\times11\) و \(22\times22\)) در شبیه‌سازی، کاربر را در میدان نزدیک قرار می‌دهند.</p>
+</div>
+
+<h3>۱۴-۲ پنج حالت پارامتردهی</h3>
+<table>
+<tr><th>حالت</th><th>پارامترهای مجهول</th><th>هدف</th></tr>
+<tr><td class="c">(a)</td><td>\([\bm\Phi_R^{[1]},\beta_R^{[1]},\beta_I^{[1]}]\)</td><td>حالت ساده و غیرواقعی؛ فقط رابطه‌ی جهت‌گیری و بهره‌ی مختلط. معیار: OEB</td></tr>
+<tr><td class="c">(b)</td><td>\([\bm\Phi_R^{[1]},\theta^{[1]}_{\mathbf r_R\mathbf u_U},\phi^{[1]}_{\mathbf r_R\mathbf u_U},\beta_R^{[1]},\beta_I^{[1]}]\)</td><td>واقعی‌تر؛ زوایای پیوند RIS-UE هم مجهول. معیار: OEB</td></tr>
+<tr><td class="c">(c)</td><td>\([\tau^{[1]},\theta^{[1]},\phi^{[1]},\bm\Phi_R^{[1]},\beta^{[1]}_R,\beta^{[1]}_I]\)</td><td>مکان‌یابی UE فقط با RIS چرخیده. معیار: PEB</td></tr>
+<tr><td class="c">(d)</td><td>\([\tau^{[2]},\theta^{[2]},\phi^{[2]},\beta^{[2]}_R,\beta^{[2]}_I]\)</td><td>مکان‌یابی UE فقط با RIS سالم. معیار: PEB</td></tr>
+<tr><td class="c">(e)</td><td>هر دو مجموعه‌ی (c) و (d)</td><td>مکان‌یابی با هر دو RIS. معیار: PEB</td></tr>
+</table>
+<p>در حالت‌های (a) و (b)، الگوریتم UE یا از مدل <strong>درست</strong> میدان نزدیک (4) استفاده می‌کند یا از مدل <strong>نادرست</strong> میدان دور (5). در نمودارها پیشوند «FF» یعنی مدل نادرست میدان دور برای صحنه‌ای که در واقع میدان نزدیک است. LOS در این شبیه‌سازی‌ها کنار گذاشته شده تا اثر RIS برجسته شود.</p>
+
+<h3>۱۴-۳ اثر تعداد آنتن گیرنده بر تخمین خطای جهت (شکل‌های ۲ و ۳ مقاله)</h3>
+<ul>
+  <li><strong>مدل میدان نزدیک:</strong> OEB با افزایش \(N_U\) به شدت کم می‌شود. برای مثال از حدود چند دهم رادیان در \(N_U\) کوچک به حدود \(10^{-3}\) رادیان یا کمتر در \(N_U=256\) می‌رسد (مقادیر از روی نمودار تقریبی‌اند). RIS بزرگ‌تر (\(484\) المان) OEB کمتری از RIS کوچک‌تر (\(121\) المان) می‌دهد.</li>
+  <li><strong>مدل میدان دور (FF):</strong> OEB با \(N_U\) تقریباً ثابت می‌ماند و فقط به مقدار اطلاعات پیشین بستگی دارد (برای پیشین \(0.09P/\sigma^2\) حدود \(0.25\) رادیان و برای \(0.3P/\sigma^2\) حدود \(0.06\) رادیان). این تأیید عددی لم ۳ است: در میدان دور هر اطلاعاتی درباره‌ی جهت‌گیری فقط از پیشین می‌آید.</li>
+  <li><strong>کوچک‌ترین مقدار ویژه \(\lambda^e_{\min}\):</strong> در مدل میدان نزدیک با \(N_U\) زیاد می‌شود، در مدل میدان دور ثابت می‌ماند. وقتی \(N_U\) کوچک است و پیشین کم، EFIM تقریباً تکین است (\(\lambda^e_{\min}\) بسیار کوچک) و OEB بسیار بزرگ.</li>
+  <li>حالت (b) (با زوایای مجهول اضافه) همان روند را نشان می‌دهد و بررسی سلامت قضیه‌ی ۱ است.</li>
+</ul>
+
+<h3>۱۴-۴ اثر تعداد آنتن گیرنده بر خطای مکان UE (شکل ۴ مقاله)</h3>
+<ul>
+  <li>در حالت (c) (فقط RIS چرخیده) و \(N_U\) کوچک، PEB به شدت تحت تأثیر خطای جهت است (در حد چند دهم متر).</li>
+  <li>با افزایش \(N_U\) اثر خطای جهت کم می‌شود، به‌خصوص وقتی RIS چرخیده بزرگ است (\(N_R^{[1]}=484\)).</li>
+  <li>در حالت (e) (هر دو RIS)، PEB عملاً توسط RIS سالم (حالت d) تعیین می‌شود: منحنی‌های (d) و (e) تقریباً روی هم‌اند.</li>
+  <li>افزودن پیشین روی جهت‌گیری (\(\Xi=0.5P/\sigma^2\)، شکل ۴b) PEB حالت (c) را در \(N_U\) کوچک بهتر می‌کند.</li>
+  <li>در \(N_U=400\) همه‌ی حالت‌ها به PEB در حد زیرمیلی‌متر تا حدود یک میلی‌متر می‌رسند.</li>
+</ul>
+
+<h3>۱۴-۵ اثر اطلاعات پیشین درباره‌ی خطای جهت (شکل ۵ مقاله)</h3>
+<ul>
+  <li>همان‌طور که انتظار می‌رود OEB با افزایش اطلاعات پیشین (از \(0\) تا \(0.1P/\sigma^2\)) کم می‌شود.</li>
+  <li>با مدل میدان نزدیک، \(N_U\) اثر بزرگی دارد: با \(N_U=64\) OEB حدود یک مرتبه کمتر از \(N_U=4\) است.</li>
+  <li>با مدل میدان دور، منحنی‌های \(N_U=4,16,64\) کاملاً روی هم‌اند: تعداد آنتن هیچ اثری ندارد.</li>
+  <li>\(\lambda^e_{\min}\) (نرمال‌شده با SNR) همین رفتار را آینه‌وار نشان می‌دهد.</li>
+</ul>
+
+<div class="box key"><span class="label">جمع‌بندی نتایج عددی</span>
+<p>(۱) فقط مدل درست میدان نزدیک از آنتن‌های اضافه برای تخمین چرخش RIS سود می‌برد. (۲) به‌کاربردن اشتباه مدل میدان دور، این اطلاعات را دور می‌ریزد. (۳) در مکان‌یابی، یک RIS سالم بر یک RIS چرخیده غالب است، ولی RIS چرخیده با آنتن‌های کافی یا پیشین مناسب همچنان مفید است. این PEB و OEBها می‌توانند معیار مقایسه‌ی الگوریتم‌های آینده باشند.</p>
+</div>
+
+<!-- ============================ 15 ============================ -->
+<h2><span class="num">۱۵</span>جمع‌بندی، فرض‌ها و محدودیت‌ها</h2>
+
+<p>مقاله یک چارچوب بیزی برای مکان‌یابی ساخت که عدم قطعیت مکان و جهت RIS را در نظر می‌گیرد: پیوند پایین یک سیستم MIMO با OFDM، چند RIS به علاوه‌ی مسیر LOS، در هر دو رژیم میدان نزدیک و دور. نتایج اصلی:</p>
+<ol>
+  <li>یک فاز مجهول در سیگنال دریافتی UE، تخمین و اصلاح خطای جهت RIS را در میدان دور غیرممکن می‌کند.</li>
+  <li>در میدان نزدیک با بیش از یک آنتن گیرنده، همان فاز مجهول مانع نیست. پس امکان اصلاح خطای جهت RIS از روی سیگنال UE فقط در میدان نزدیک وجود دارد.</li>
+  <li>RISها فقط با اطلاعات پیشین درباره‌ی مکانشان برای مکان‌یابی مفیدند.</li>
+  <li>اعمال نادرست مدل میدان دور به سیگنال میدان نزدیک باعث از دست رفتن اطلاعات می‌شود.</li>
+</ol>
+
+<h3>فرض‌هایی که باید در ذهن داشت</h3>
+<ul>
+  <li>همزمانی کامل ساعت بین BS و UE، و ارسال باریک‌باند (فرض ۴).</li>
+  <li>جداسازی کامل مسیرها با کدهای متعامد روی \(T\) نماد (فرض ۳) و کانال ثابت در این مدت (فرض ۱).</li>
+  <li>BS دقیقاً معلوم؛ مسیرهای پراکنده‌سازهای طبیعی نادیده گرفته شده.</li>
+  <li>آنتن‌های BS و UE همه‌جهته (فرض ۲) و افت مسیر یکسان روی المان‌های یک RIS در تحلیل تخمین‌پذیری.</li>
+  <li>استقلال پارامترهای مسیرهای مختلف و استقلال اطلاعات پیشین آن‌ها.</li>
+  <li>کران‌ها برای تخمین‌گرهای نااریب‌اند و رفتار الگوریتم‌های واقعی در SNR پایین ممکن است از آن‌ها فاصله داشته باشد.</li>
+</ul>
+
+<h3>ادامه‌ی پیشنهادی مقاله</h3>
+<p>بررسی افت عملکرد وقتی الگوریتم مکان‌یابی اصلاً از چرخش و جابه‌جایی RIS خبر ندارد. این نیاز به محاسبه‌ی واگرایی کولبک-لایبلر و «کران کرامر-رائو با مدل نادرست» (misspecified CRB) دارد.</p>
+
+<!-- ============================ 16 ============================ -->
+<h2><span class="num">۱۶</span>جدول نمادها</h2>
+<table class="long">
+<tr><th>نماد</th><th>معنا</th></tr>
+<tr><td class="sym">\((\cdot)^{[0]},\ (\cdot)^{[m]}\)</td><td>مربوط به مسیر LOS؛ مربوط به مسیر RIS شماره‌ی \(m\)</td></tr>
+<tr><td class="sym">\((\cdot)^{\tp},\ (\cdot)^{\hr},\ (\cdot)^*\)</td><td>ترانهاده؛ ترانهاده‌ی مزدوج (هرمیتی)؛ مزدوج مختلط</td></tr>
+<tr><td class="sym">\([\mathbf V]_{[g_1:v_1,\,g_2:v_2]}\)</td><td>زیرماتریس با سطرهای \(g_1\) تا \(v_1\) و ستون‌های \(g_2\) تا \(v_2\)</td></tr>
+<tr><td class="sym">\(\succ,\ \succeq\)</td><td>معین مثبت؛ نیمه‌معین مثبت (و ترتیب ماتریسی)</td></tr>
+<tr><td class="sym">\(N_B,\ N_R^{[m]},\ N_U,\ M_1\)</td><td>تعداد آنتن BS، المان RIS، آنتن UE، تعداد RISها</td></tr>
+<tr><td class="sym">\(N,\ T,\ N_D\)</td><td>تعداد زیرحامل، تعداد نماد OFDM، تعداد جریان داده</td></tr>
+<tr><td class="sym">\(f_c,\ \Delta f,\ B,\ f_n\)</td><td>فرکانس حامل، فاصله‌ی زیرحامل، پهنای باند، فرکانس زیرحامل \(n\)ام</td></tr>
+<tr><td class="sym">\(\tilde{\mathbf p}_V,\ \mathbf p_V\)</td><td>مکان مرکز موجودیت قبل و بعد از خطا</td></tr>
+<tr><td class="sym">\(\tilde{\mathbf s}_v,\ \mathbf s_v\)</td><td>مکان المان نسبت به مرکز، قبل و بعد از چرخش</td></tr>
+<tr><td class="sym">\(\bm\xi_V\)</td><td>بردار خطای مکان (misalignment)</td></tr>
+<tr><td class="sym">\(\bm\Phi_V=[\alpha,\psi,\varphi],\ \mathbf Q_V\)</td><td>زوایای جهت‌گیری و ماتریس دوران متناظر</td></tr>
+<tr><td class="sym">\(d,\ \bm\Delta,\ \theta,\ \phi\)</td><td>فاصله، بردار جهت یکه، زاویه‌ی ارتفاع، زاویه‌ی سمت</td></tr>
+<tr><td class="sym">\(\tau=d/c\)</td><td>تأخیر انتشار</td></tr>
+<tr><td class="sym">\(\beta=\beta_R+j\beta_I\)</td><td>ضریب مختلط مجهول کانال (پارامتر مزاحم)</td></tr>
+<tr><td class="sym">\(\rho\)</td><td>افت مسیر (دامنه)</td></tr>
+<tr><td class="sym">\(\epsilon\)</td><td>خطای همزمانی</td></tr>
+<tr><td class="sym">\(\gamma_t,\ \bm\Gamma,\ \vartheta_r\)</td><td>بخش سریع ضریب RIS، ماتریس فازهای ثابت، فاز المان \(r\)</td></tr>
+<tr><td class="sym">\(q_0,\ \epsilon_p\)</td><td>ثابت الگوی بهره‌ی المان، بازده المان</td></tr>
+<tr><td class="sym">\(\bm\mu,\ \mathbf n,\ N_0\)</td><td>سیگنال بدون نویز، نویز، چگالی طیفی نویز</td></tr>
+<tr><td class="sym">\(\bm\eta,\ \bm\eta_1,\ \bm\eta_2\)</td><td>همه‌ی پارامترهای کانال؛ هندسی؛ مزاحم</td></tr>
+<tr><td class="sym">\(\mathbf J_{\mathbf y|\bm\eta},\ \mathbf J_{\bm\eta},\ \mathbf J_{\mathbf y;\bm\eta}\)</td><td>FIM از مشاهده؛ از پیشین؛ FIM عمومی (جمع آن دو)</td></tr>
+<tr><td class="sym">\(\mathbf J^e\)</td><td>FIM معادل (مکمل شور)</td></tr>
+<tr><td class="sym">\(\Xi\)</td><td>ماتریس‌های اطلاعات پیشین</td></tr>
+<tr><td class="sym">\(\bm\kappa_0=[\mathbf p_U,\bm\Phi_U]\)</td><td>پارامتر مکانی UE</td></tr>
+<tr><td class="sym">\(\bm\kappa^{[m]},\ \bm\zeta^{[m]}\)</td><td>پارامتر مکانی RIS در روش ۱ (مکان، جهت) و روش ۲ (جابه‌جایی، جهت)</td></tr>
+<tr><td class="sym">\(\bm\Upsilon\)</td><td>ماتریس تبدیل (مشتق پارامترهای کانال نسبت به پارامترهای مکانی)</td></tr>
+<tr><td class="sym">PEB, OEB</td><td>کران خطای مکان (متر)، کران خطای جهت‌گیری (رادیان)</td></tr>
+</table>
+
+<p class="muted" style="margin-top:6mm;font-size:9pt">این سند شرحی آموزشی از مقاله‌ی arXiv:2210.03599v2 (ویرایش ۲۱ اوت ۲۰۲۳) است. مثال‌های عددی، اثبات‌های تکمیلی و شهودها برای فهم بهتر اضافه شده‌اند و جزو متن اصلی مقاله نیستند. مقادیری که از نمودارهای مقاله خوانده شده‌اند تقریبی‌اند.</p>
+
+</body>
+</html>
